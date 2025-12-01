@@ -81,17 +81,20 @@ export function AnimatedText({
   const splitText = children.split('');
 
   return (
-    <h2 ref={containerRef} className={`overflow-hidden ${containerClassName}`}>
-      <span
-        className={`inline-block leading-relaxed font-black ${textClassName}`}
-        style={{ fontSize: textClassName.includes('text-') ? undefined : 'clamp(1.6rem, 8vw, 10rem)' }}
+    <div ref={containerRef} className={`overflow-hidden ${containerClassName}`}>
+      <div
+        className={`leading-relaxed ${textClassName}`}
+        style={{ 
+          fontSize: textClassName.includes('text-') ? undefined : 'clamp(1.6rem, 8vw, 10rem)',
+          whiteSpace: 'pre-line'
+        }}
       >
         {splitText.map((char, index) => (
-          <span key={index} className="inline-block char">
+          <span key={index} className="inline-block char" style={{ whiteSpace: char === '\n' ? 'pre' : 'normal' }}>
             {char === ' ' ? '\u00A0' : char}
           </span>
         ))}
-      </span>
-    </h2>
+      </div>
+    </div>
   );
 }

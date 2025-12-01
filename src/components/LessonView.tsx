@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { useState, useRef } from "react";
 import { VideoPlayer } from "./VideoPlayer";
 import { InteractiveTranscript } from "./InteractiveTranscript";
+import { AnimatedText } from "./ui/AnimatedText";
 
 interface TranscriptSegment {
   id: number;
@@ -1022,56 +1023,18 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
 
               {/* Content Section */}
               <div className="p-8">
-                  {/* Video Player & Transcript - Only if lesson has video */}
-                  {'videoUrl' in lesson && 'transcript' in lesson && lesson.videoUrl && lesson.transcript && lesson.transcript.length > 0 && (
-                    <div className="mb-8 space-y-6">
-                      <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-inner border border-blue-200/50">
-                        <h3 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2">
-                          🎥 Video Pembelajaran
-                        </h3>
-                        <div ref={videoPlayerRef}>
-                          <VideoPlayer
-                            videoUrl={lesson.videoUrl}
-                            onTimeUpdate={setCurrentVideoTime}
-                            onPlay={() => setIsVideoPlaying(true)}
-                            onPause={() => setIsVideoPlaying(false)}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-inner border border-blue-200/50">
-                        <h3 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2">
-                          📝 Interactive Transcript
-                        </h3>
-                        <InteractiveTranscript
-                          segments={lesson.transcript}
-                          currentTime={currentVideoTime}
-                          onSegmentClick={(time) => {
-                            setCurrentVideoTime(time);
-                            if (videoPlayerRef.current) {
-                              const video = videoPlayerRef.current.querySelector('video');
-                              if (video) {
-                                video.currentTime = time;
-                              }
-                            }
-                          }}
-                        />
-                      </div>
-                    </div>
-                  )}
-
+                  {/* Only show text content, remove video and transcript */}
                   <div className="prose max-w-none">
-                    <div className="whitespace-pre-line text-gray-800 leading-loose text-lg font-normal bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-inner border border-blue-200/50 animate-[scaleIn_2s_ease-out] animation-delay-500"
-                      style={{
-                        fontFamily: '"Georgia", "Times New Roman", serif',
-                        lineHeight: "1.8",
-                        animationDelay: "0.5s",
-                        opacity: 0,
-                        animationFillMode: "forwards"
-                      }}
+                    <AnimatedText
+                      containerClassName="mb-8"
+                      textClassName="text-gray-800 leading-loose font-normal text-lg"
+                      scrollStart="top bottom-=10%"
+                      scrollEnd="center center+=20%"
+                      stagger={0.005}
+                      animationDuration={0.6}
                     >
                       {lesson.content.text}
-                    </div>
+                    </AnimatedText>
                   </div>
 
                   {/* Action Button */}
