@@ -43,44 +43,53 @@ export function RotatingText({
   }, [auto, rotationInterval, next]);
 
   const currentText = texts[currentIndex];
-  const words = currentText.split(" ");
+  
+  // Split by lines first to preserve line breaks
+  const lines = currentText.split('\n');
 
   return (
-    <span
-      className={`inline-flex flex-wrap items-center justify-center gap-x-2 ${className}`}
-    >
+    <div className={`${className}`}>
       <AnimatePresence mode="wait">
-        <motion.span
+        <motion.div
           key={currentIndex}
-          className={`inline-flex flex-wrap items-center justify-center gap-x-2 ${textClassName}`}
+          className={textClassName}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          {words.map((word, wordIndex) => (
-            <span key={wordIndex} className="inline-flex">
-              {word.split("").map((char, charIndex) => (
-                <motion.span
-                  key={`${wordIndex}-${charIndex}`}
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -20, opacity: 0 }}
-                  transition={{
-                    type: "spring",
-                    damping: 25,
-                    stiffness: 300,
-                    delay:
-                      (wordIndex * word.length + charIndex) * staggerDuration,
-                  }}
-                  className="inline-block"
-                >
-                  {char}
-                </motion.span>
+          {lines.map((line, lineIndex) => (
+            <div key={lineIndex} className="inline-block w-full">
+              {line.split(" ").map((word, wordIndex) => (
+                <span key={wordIndex} className="inline-flex mr-1">
+                  {word.split("").map((char, charIndex) => {
+                    const totalCharsBeforeLine = lines.slice(0, lineIndex).join(' ').length;
+                    const totalCharsInLine = line.split(" ").slice(0, wordIndex).join(' ').length;
+                    const globalCharIndex = totalCharsBeforeLine + totalCharsInLine + charIndex;
+                    
+                    return (
+                      <motion.span
+                        key={`${lineIndex}-${wordIndex}-${charIndex}`}
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -20, opacity: 0 }}
+                        transition={{
+                          type: "spring",
+                          damping: 25,
+                          stiffness: 300,
+                          delay: globalCharIndex * staggerDuration,
+                        }}
+                        className="inline-block"
+                      >
+                        {char}
+                      </motion.span>
+                    );
+                  })}
+                </span>
               ))}
-            </span>
+            </div>
           ))}
-        </motion.span>
+        </motion.div>
       </AnimatePresence>
-    </span>
+    </div>
   );
 }

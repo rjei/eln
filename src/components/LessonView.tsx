@@ -1025,19 +1025,13 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
               <div className="p-8">
                   {/* Text content with rotating text animation */}
                   <div className="prose max-w-none bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-inner border border-blue-200/50">
-                    {lesson.content.text.split('\n\n').map((paragraph, index) => (
-                      paragraph.trim() && (
-                        <div key={index} className="mb-4 last:mb-0">
-                          <RotatingText
-                            texts={[paragraph]}
-                            rotationInterval={999999}
-                            auto={false}
-                            className="text-gray-800 leading-loose text-lg font-normal"
-                            textClassName="text-gray-800"
-                          />
-                        </div>
-                      )
-                    ))}
+                    <RotatingText
+                      texts={[lesson.content.text]}
+                      rotationInterval={999999}
+                      auto={false}
+                      className="whitespace-pre-line text-gray-800 leading-loose text-lg font-normal"
+                      textClassName="text-gray-800"
+                    />
                   </div>
 
                   {/* Action Button */}
