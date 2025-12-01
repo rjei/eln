@@ -1,4 +1,4 @@
-import { BookOpen, Users, Award, TrendingUp, ArrowRight } from "lucide-react";
+import { BookOpen, Users, Award, TrendingUp, ArrowRight, Video } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
@@ -13,6 +13,12 @@ export function HomePage({ onNavigate }: HomePageProps) {
       icon: BookOpen,
       title: "Materi Lengkap",
       description: "Dari basic hingga advanced dengan kurikulum terstruktur",
+    },
+    {
+      icon: Video,
+      title: "Video Learning",
+      description: "Belajar dengan video interaktif dan subtitle real-time",
+      link: "comprehensible-input",
     },
     {
       icon: Users,
@@ -41,11 +47,11 @@ export function HomePage({ onNavigate }: HomePageProps) {
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary to-orange-700 text-white">
+      <section className="bg-gradient-to-br from-primary to-orange-700 text-white animate-gradient overflow-hidden">
         <div className="container mx-auto px-4 py-20">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h1 className="text-5xl mb-6">
+            <div className="animate-slide-in-left">
+              <h1 className="text-5xl mb-6 font-extrabold leading-tight">
                 Kuasai Bahasa Inggris dengan Mudah dan Menyenangkan
               </h1>
               <p className="text-xl mb-8 text-orange-50">
@@ -58,7 +64,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
                   size="lg"
                   variant="secondary"
                   onClick={() => onNavigate("courses")}
-                  className="gap-2 hover:scale-105 hover:shadow-xl transition-all duration-300"
+                  className="gap-2 hover:scale-110 hover:shadow-2xl transition-all duration-300 animate-pulse-glow"
                 >
                   Mulai Belajar
                   <ArrowRight className="h-5 w-5" />
@@ -72,11 +78,11 @@ export function HomePage({ onNavigate }: HomePageProps) {
                 </Button>
               </div>
             </div>
-            <div className="hidden md:block">
+            <div className="hidden md:block animate-slide-in-right">
               <ImageWithFallback
                 src="https://images.unsplash.com/photo-1543109740-4bdb38fda756?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbmdsaXNoJTIwbGVhcm5pbmclMjBlZHVjYXRpb258ZW58MXx8fHwxNzYyMzA0NTYxfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
                 alt="English Learning"
-                className="rounded-lg shadow-2xl w-full h-auto hover:scale-105 transition-transform duration-500"
+                className="rounded-lg shadow-2xl w-full h-auto hover:scale-110 hover:rotate-2 transition-all duration-500 animate-bounce-slow"
               />
             </div>
           </div>
@@ -90,7 +96,8 @@ export function HomePage({ onNavigate }: HomePageProps) {
             {stats.map((stat, index) => (
               <div
                 key={index}
-                className="text-center p-4 rounded-xl hover:bg-white hover:shadow-lg transition-all duration-300 cursor-pointer group"
+                className="text-center p-4 rounded-xl hover:bg-white hover:shadow-2xl transition-all duration-300 cursor-pointer group hover-lift animate-scale-in"
+                style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className="text-4xl font-bold text-primary mb-2 group-hover:scale-110 transition-transform">
                   {stat.value}
@@ -118,15 +125,26 @@ export function HomePage({ onNavigate }: HomePageProps) {
               return (
                 <Card
                   key={index}
-                  className="p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer group border-2 border-transparent hover:border-primary/20"
+                  onClick={() => feature.link && onNavigate(feature.link)}
+                  className="p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-4 cursor-pointer group border-2 border-transparent hover:border-primary/30 animate-fade-in-up hover-shine"
+                  style={{ animationDelay: `${index * 0.15}s` }}
                 >
-                  <div className="h-12 w-12 bg-orange-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
-                    <Icon className="h-6 w-6 text-primary group-hover:text-white transition-colors" />
+                  <div className={`h-12 w-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-125 group-hover:rotate-12 transition-all duration-300 ${
+                    feature.link ? 'bg-gradient-to-br from-purple-100 to-pink-100 group-hover:from-purple-500 group-hover:to-pink-500 animate-gradient' : 'bg-orange-50 group-hover:bg-primary'
+                  }`}>
+                    <Icon className={`h-6 w-6 transition-colors ${
+                      feature.link ? 'text-purple-600 group-hover:text-white' : 'text-primary group-hover:text-white'
+                    }`} />
                   </div>
                   <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
                     {feature.title}
                   </h3>
                   <p className="text-gray-600">{feature.description}</p>
+                  {feature.link && (
+                    <div className="mt-4 flex items-center gap-2 text-sm text-purple-600 font-semibold group-hover:gap-3 transition-all">
+                      Coba Sekarang <ArrowRight className="h-4 w-4" />
+                    </div>
+                  )}
                 </Card>
               );
             })}
@@ -135,12 +153,13 @@ export function HomePage({ onNavigate }: HomePageProps) {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-primary text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl mb-6">
+      <section className="py-20 bg-gradient-to-br from-primary via-orange-600 to-orange-700 text-white animate-gradient relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE zNGMwLTYuNjI3LTUuMzczLTEyLTEyLTEyczEyIDUuMzczIDEyIDEyLTUuMzczIDEyLTEyIDEyLTEyLTUuMzczLTEyLTEyem0wIDYwYzAtNi42MjctNS4zNzMtMTItMTItMTJzMTIgNS4zNzMgMTIgMTItNS4zNzMgMTItMTIgMTItMTItNS4zNzMtMTItMTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-10"></div>
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <h2 className="text-4xl mb-6 font-extrabold animate-scale-in">
             Siap Mulai Perjalanan Bahasa Inggris Anda?
           </h2>
-          <p className="text-xl mb-8 text-orange-50">
+          <p className="text-xl mb-8 text-orange-50 animate-fade-in" style={{ animationDelay: '0.2s' }}>
             Bergabunglah dengan ribuan siswa yang telah meningkatkan kemampuan
             bahasa Inggris mereka
           </p>
@@ -148,7 +167,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
             size="lg"
             variant="secondary"
             onClick={() => onNavigate("courses")}
-            className="gap-2 hover:scale-105 hover:shadow-xl transition-all duration-300"
+            className="gap-2 hover:scale-110 hover:shadow-2xl transition-all duration-300 animate-bounce-slow hover-shine"
           >
             Jelajahi Kursus
             <ArrowRight className="h-5 w-5" />

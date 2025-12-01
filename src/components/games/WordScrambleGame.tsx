@@ -5,6 +5,7 @@ import { Card } from "../ui/card";
 import { Input } from "../ui/input";
 import { toast } from "sonner@2.0.3";
 import { Progress } from "../ui/progress";
+import Shuffle from "../ui/Shuffle";
 
 interface WordScrambleGameProps {
   onBack: () => void;
@@ -213,7 +214,15 @@ export function WordScrambleGame({ onBack }: WordScrambleGameProps) {
                 fontFamily: '"Comic Sans MS", "Chalkboard SE", cursive',
               }}
             >
-              🔀 Word Scramble 🎯
+              <Shuffle
+                text="🔀 Word Scramble 🎯"
+                tag="span"
+                shuffleDirection="right"
+                duration={0.5}
+                stagger={0.05}
+                triggerOnce={false}
+                threshold={0}
+              />
             </h1>
             <p
               className="text-xs sm:text-sm text-purple-800 font-bold mt-1"

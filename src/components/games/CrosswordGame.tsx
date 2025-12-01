@@ -5,6 +5,7 @@ import { Card } from "../ui/card";
 import { Input } from "../ui/input";
 import { toast } from "sonner@2.0.3";
 import TargetCursor from "../ui/TargetCursor";
+import Shuffle from "../ui/Shuffle";
 
 interface CrosswordGameProps {
   onBack: () => void;
@@ -284,7 +285,16 @@ export function CrosswordGame({ onBack }: CrosswordGameProps) {
               Kembali
             </Button>
 
-            <h1 className="text-3xl text-white font-bold">Crossword Puzzle</h1>
+            <Shuffle
+              text="Crossword Puzzle"
+              tag="h1"
+              className="text-3xl text-black font-bold"
+              shuffleDirection="right"
+              duration={0.5}
+              stagger={0.05}
+              triggerOnce={false}
+              threshold={0}
+            />
 
             <Button
               variant="ghost"

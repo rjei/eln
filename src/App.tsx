@@ -10,6 +10,7 @@ import { WordleGame } from "./components/games/WordleGame";
 import { WordScrambleGame } from "./components/games/WordScrambleGame";
 import { HangmanGame } from "./components/games/HangmanGame";
 import { CrosswordGame } from "./components/games/CrosswordGame";
+import { ComprehensibleInputPage } from "./components/ComprehensibleInputPage";
 import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner@2.0.3";
 import ClickSpark from "./components/ui/click-spark";
@@ -20,6 +21,7 @@ type Page =
   | "course-detail"
   | "lesson"
   | "my-learning"
+  | "comprehensible-input"
   | "games"
   | "game-wordle"
   | "game-scramble"
@@ -110,6 +112,10 @@ export default function App() {
 
         {currentPage === "my-learning" && (
           <MyLearning onNavigate={handleNavigate} />
+        )}
+
+        {currentPage === "comprehensible-input" && (
+          <ComprehensibleInputPage onBack={() => setCurrentPage("home")} />
         )}
 
         {currentPage === "games" && (

@@ -3,6 +3,7 @@ import { ArrowLeft, RotateCcw, Heart } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import { toast } from "sonner@2.0.3";
+import Shuffle from "../ui/Shuffle";
 
 interface HangmanGameProps {
   onBack: () => void;
@@ -252,12 +253,17 @@ export function HangmanGame({ onBack }: HangmanGameProps) {
           </Button>
 
           <div className="text-center">
-            <h1
-              className="text-3xl sm:text-5xl font-black bg-gradient-to-r from-orange-600 via-amber-600 to-yellow-600 bg-clip-text text-transparent animate-gradient drop-shadow-lg"
+            <Shuffle
+              text="🎭 Hangman ☠️"
+              tag="h1"
+              className="text-3xl sm:text-5xl font-black bg-gradient-to-r from-orange-600 via-amber-600 to-yellow-600 bg-clip-text text-transparent drop-shadow-lg"
               style={{ fontFamily: '"Impact", "Arial Black", sans-serif' }}
-            >
-              🎭 Hangman ☠️
-            </h1>
+              shuffleDirection="right"
+              duration={0.5}
+              stagger={0.05}
+              triggerOnce={false}
+              threshold={0}
+            />
             <p
               className="text-xs sm:text-sm text-orange-800 font-bold mt-1"
               style={{ fontFamily: '"Impact", "Arial Black", sans-serif' }}

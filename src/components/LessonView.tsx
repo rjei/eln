@@ -3,7 +3,17 @@ import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Progress } from "./ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { VideoPlayer } from "./VideoPlayer";
+import { InteractiveTranscript } from "./InteractiveTranscript";
+
+interface TranscriptSegment {
+  id: number;
+  startTime: number;
+  endTime: number;
+  text: string;
+  speaker: string;
+}
 
 interface LessonViewProps {
   lessonId: number;
@@ -15,6 +25,9 @@ export function LessonView({ lessonId, onBack, onComplete }: LessonViewProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
+  const [currentVideoTime, setCurrentVideoTime] = useState(0);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const videoPlayerRef = useRef<HTMLDivElement>(null);
 
   const lessonData = {
     1: {
@@ -74,6 +87,37 @@ Mari kita mulai perjalanan belajar bahasa Inggris Anda!`,
     2: {
       title: "Basic Greetings & Introductions",
       duration: "12 menit",
+      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+      transcript: [
+        {
+          id: 1,
+          startTime: 0,
+          endTime: 7,
+          text: "Hello everyone! Today we're going to learn about greetings and introductions in English.",
+          speaker: "Teacher",
+        },
+        {
+          id: 2,
+          startTime: 7,
+          endTime: 14,
+          text: "We use different greetings for different times of the day. Good morning, good afternoon, and good evening.",
+          speaker: "Teacher",
+        },
+        {
+          id: 3,
+          startTime: 14,
+          endTime: 22,
+          text: "When meeting someone for the first time, you can say: Nice to meet you! or Pleased to meet you!",
+          speaker: "Teacher",
+        },
+        {
+          id: 4,
+          startTime: 22,
+          endTime: 30,
+          text: "Let's practice these greetings together. Remember to smile and make eye contact!",
+          speaker: "Teacher",
+        },
+      ] as TranscriptSegment[],
       content: {
         text: `Greetings (Salam) adalah cara kita menyapa orang lain dalam bahasa Inggris. Mari pelajari berbagai cara menyapa dalam situasi berbeda.
 
@@ -121,6 +165,44 @@ Coba perkenalkan diri Anda dalam bahasa Inggris menggunakan format di atas. Ulan
     3: {
       title: "Practice: Self Introduction",
       duration: "10 menit",
+      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+      transcript: [
+        {
+          id: 1,
+          startTime: 0,
+          endTime: 8,
+          text: "Welcome back! In this lesson, we'll practice introducing ourselves in English.",
+          speaker: "Teacher",
+        },
+        {
+          id: 2,
+          startTime: 8,
+          endTime: 16,
+          text: "Let's start with a basic template: Hello, my name is [your name]. I'm from [your city].",
+          speaker: "Teacher",
+        },
+        {
+          id: 3,
+          startTime: 16,
+          endTime: 24,
+          text: "You can add more information like your job or hobbies. For example: I'm a teacher. I like reading books.",
+          speaker: "Teacher",
+        },
+        {
+          id: 4,
+          startTime: 24,
+          endTime: 32,
+          text: "Always end with a friendly phrase like 'Nice to meet you!' or 'Pleased to meet you!'",
+          speaker: "Teacher",
+        },
+        {
+          id: 5,
+          startTime: 32,
+          endTime: 40,
+          text: "Now practice saying your own introduction out loud. Don't be shy!",
+          speaker: "Teacher",
+        },
+      ],
       content: {
         text: `Sekarang saatnya praktek! Mari kita latih kemampuan memperkenalkan diri dalam bahasa Inggris.
 
@@ -184,6 +266,51 @@ Key Phrases:
     4: {
       title: "Present Perfect Tense",
       duration: "18 menit",
+      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+      transcript: [
+        {
+          id: 1,
+          startTime: 0,
+          endTime: 10,
+          text: "Today we're learning about Present Perfect Tense. This is an important grammar structure in English.",
+          speaker: "Teacher",
+        },
+        {
+          id: 2,
+          startTime: 10,
+          endTime: 20,
+          text: "We use Present Perfect to talk about actions that happened at an unspecified time or actions that affect the present.",
+          speaker: "Teacher",
+        },
+        {
+          id: 3,
+          startTime: 20,
+          endTime: 30,
+          text: "The formula is: Subject plus have or has, plus the past participle form of the verb.",
+          speaker: "Teacher",
+        },
+        {
+          id: 4,
+          startTime: 30,
+          endTime: 40,
+          text: "For example: I have studied English for five years. She has visited Bali twice.",
+          speaker: "Teacher",
+        },
+        {
+          id: 5,
+          startTime: 40,
+          endTime: 50,
+          text: "Common time markers include: already, yet, just, ever, and never. These help us know when to use Present Perfect.",
+          speaker: "Teacher",
+        },
+        {
+          id: 6,
+          startTime: 50,
+          endTime: 60,
+          text: "Remember: Have you ever been to Japan? Has she called you today? These are typical Present Perfect questions.",
+          speaker: "Teacher",
+        },
+      ],
       content: {
         text: `Present Perfect Tense digunakan untuk menyatakan tindakan yang telah selesai di waktu yang tidak spesifik atau tindakan yang masih berhubungan dengan saat ini.
 
@@ -260,6 +387,44 @@ Perbedaan dengan Simple Past:
     5: {
       title: "Business & Professional Vocabulary",
       duration: "16 menit",
+      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+      transcript: [
+        {
+          id: 1,
+          startTime: 0,
+          endTime: 8,
+          text: "Welcome to Business and Professional Vocabulary. Today we'll learn essential business terms.",
+          speaker: "Teacher",
+        },
+        {
+          id: 2,
+          startTime: 8,
+          endTime: 16,
+          text: "Let's start with common office words: Meeting, Deadline, Project, Presentation, and Report.",
+          speaker: "Teacher",
+        },
+        {
+          id: 3,
+          startTime: 16,
+          endTime: 24,
+          text: "In business communication, we often say: Could you please send me the report? or Let's schedule a meeting.",
+          speaker: "Teacher",
+        },
+        {
+          id: 4,
+          startTime: 24,
+          endTime: 32,
+          text: "Important business verbs include: negotiate, collaborate, implement, analyze, and coordinate.",
+          speaker: "Teacher",
+        },
+        {
+          id: 5,
+          startTime: 32,
+          endTime: 40,
+          text: "Remember to be professional and polite in all business communications. Use phrases like 'I appreciate your help' or 'Thank you for your time'.",
+          speaker: "Teacher",
+        },
+      ],
       content: {
         text: `Vocabulary profesional sangat penting untuk berkomunikasi di lingkungan kerja. Mari pelajari istilah-istilah bisnis yang umum digunakan.
 
@@ -336,7 +501,45 @@ Contoh Situasi:
     // Intermediate English Mastery - Lesson 3
     6: {
       title: "Small Talk & Social Situations",
-      duration: "14 menit",
+      duration: "16 menit",
+      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+      transcript: [
+        {
+          id: 1,
+          startTime: 0,
+          endTime: 8,
+          text: "Small talk is an important skill for building relationships. Let's learn how to do it naturally.",
+          speaker: "Teacher",
+        },
+        {
+          id: 2,
+          startTime: 8,
+          endTime: 16,
+          text: "Safe topics include weather, weekend plans, hobbies, and recent events. Avoid politics, religion, or personal finances.",
+          speaker: "Teacher",
+        },
+        {
+          id: 3,
+          startTime: 16,
+          endTime: 24,
+          text: "To start: Nice weather today, isn't it? Or: Do you have any plans for the weekend?",
+          speaker: "Teacher",
+        },
+        {
+          id: 4,
+          startTime: 24,
+          endTime: 32,
+          text: "Keep the conversation going with follow-up questions: That's interesting! Tell me more. Or: Really? How did that happen?",
+          speaker: "Teacher",
+        },
+        {
+          id: 5,
+          startTime: 32,
+          endTime: 40,
+          text: "To close politely: It was nice talking to you! or I should get going, but let's catch up soon!",
+          speaker: "Teacher",
+        },
+      ],
       content: {
         text: `Small talk adalah percakapan ringan yang penting untuk membangun hubungan sosial dan profesional. Mari pelajari cara melakukan small talk yang natural.
 
@@ -421,9 +624,311 @@ Tips:
         },
       },
     },
+    // Business English Professional - Lesson 1
+    101: {
+      title: "Professional Email Writing",
+      duration: "20 menit",
+      content: {
+        text: `Email profesional adalah keterampilan penting dalam dunia bisnis modern. Mari pelajari cara menulis email yang efektif dan profesional.
+
+Email Structure (Struktur Email):
+
+1. Subject Line (Subjek)
+• Clear and specific - Jelas dan spesifik
+• Include key information - Sertakan informasi penting
+• Examples: "Meeting Request - Project Update", "Follow-up: Q4 Sales Report"
+
+2. Greeting/Salutation (Salam Pembuka)
+• Formal: "Dear Mr./Ms. [Last Name],"
+• Semi-formal: "Hello [First Name],"
+• Team email: "Dear Team," or "Hi everyone,"
+
+3. Opening (Pembukaan)
+• State your purpose immediately
+• "I am writing to..."
+• "I hope this email finds you well..."
+• "Following up on our conversation..."
+
+4. Body (Isi Utama)
+• Keep it concise and clear
+• Use bullet points for multiple items
+• One topic per paragraph
+• Be specific and actionable
+
+5. Closing (Penutup)
+• Thank you statement
+• Call to action
+• "Please let me know if you need any further information."
+• "I look forward to hearing from you."
+
+6. Sign-off (Salam Penutup)
+• Formal: "Sincerely," "Best regards," "Kind regards,"
+• Semi-formal: "Thanks," "Best," "Cheers,"
+
+Professional Email Phrases:
+
+Opening:
+• "I hope this email finds you well."
+• "Thank you for your email regarding..."
+• "I am writing to inquire about..."
+
+Requesting:
+• "Could you please...?"
+• "I would appreciate if you could..."
+• "Would it be possible to...?"
+
+Responding:
+• "Thank you for bringing this to my attention."
+• "I appreciate your prompt response."
+• "As discussed in our meeting..."
+
+Apologizing:
+• "I apologize for any inconvenience."
+• "Sorry for the delayed response."
+• "I regret to inform you that..."
+
+Example Professional Email:
+
+Subject: Project Timeline - Q1 2024
+
+Dear Ms. Johnson,
+
+I hope this email finds you well. I am writing to follow up on our discussion about the Q1 2024 project timeline.
+
+As discussed in our meeting, I would like to propose the following schedule:
+• Project kickoff: January 15, 2024
+• First milestone: February 1, 2024
+• Final delivery: March 30, 2024
+
+Could you please review this timeline and let me know if it works for your team?
+
+I look forward to your feedback.
+
+Best regards,
+John Smith
+Project Manager`,
+        vocabulary: [
+          {
+            word: "Inquire",
+            meaning: "Menanyakan",
+            example: "I am writing to inquire about the position.",
+          },
+          {
+            word: "Regarding",
+            meaning: "Mengenai",
+            example: "Regarding your email, I have some questions.",
+          },
+          {
+            word: "Appreciate",
+            meaning: "Menghargai",
+            example: "I appreciate your quick response.",
+          },
+          {
+            word: "Prompt",
+            meaning: "Cepat/Segera",
+            example: "Thank you for your prompt reply.",
+          },
+          {
+            word: "Attach",
+            meaning: "Melampirkan",
+            example: "Please find attached the document.",
+          },
+        ],
+        quiz: {
+          question: "What is the most professional way to start a business email?",
+          options: [
+            "Hey, what's up?",
+            "Dear Mr. Smith,",
+            "Yo!",
+            "Hi there!",
+          ],
+          correctAnswer: 1,
+        },
+      },
+    },
+    // TOEFL Preparation - Lesson 1
+    201: {
+      title: "TOEFL Reading Strategies",
+      duration: "25 menit",
+      content: {
+        text: `TOEFL Reading section mengukur kemampuan Anda memahami teks akademik dalam bahasa Inggris. Mari pelajari strategi efektif untuk menghadapi section ini.
+
+TOEFL Reading Section Overview:
+
+Format:
+• 3-4 passages (700 words each)
+• 10 questions per passage
+• 54-72 minutes total
+• Academic topics from various fields
+
+Question Types:
+
+1. Factual Information Questions
+• "According to the paragraph..."
+• "The author mentions X in order to..."
+• Strategy: Scan for specific information
+
+2. Negative Factual Information
+• "All of the following are mentioned EXCEPT..."
+• Strategy: Eliminate wrong answers
+
+3. Inference Questions
+• "What can be inferred about...?"
+• "The author implies that..."
+• Strategy: Read between the lines
+
+4. Vocabulary Questions
+• "The word X in the passage is closest in meaning to..."
+• Strategy: Use context clues
+
+5. Reference Questions
+• "The word 'it' in the passage refers to..."
+• Strategy: Check preceding sentences
+
+6. Sentence Simplification
+• "Which sentence best expresses the essential information?"
+• Strategy: Identify main ideas
+
+7. Insert Text Questions
+• "Where would the sentence best fit?"
+• Strategy: Look for logical transitions
+
+8. Prose Summary
+• Choose 3 main ideas from 6 options
+• Strategy: Focus on big picture
+
+9. Fill in a Table
+• Categorize information
+• Strategy: Understand organizational structure
+
+Key Strategies:
+
+1. Time Management:
+• Spend 20 minutes per passage
+• Don't get stuck on one question
+• Flag difficult questions and return later
+
+2. Skimming Technique:
+• Read title and introduction
+• Read first sentence of each paragraph
+• Read conclusion
+• Get the main idea before details
+
+3. Scanning for Details:
+• Use keywords from questions
+• Locate specific information quickly
+• Don't read every word
+
+4. Vocabulary Building:
+• Learn academic word list
+• Study prefixes and suffixes
+• Practice context clues
+
+5. Note-Taking:
+• Write key points briefly
+• Use abbreviations
+• Note paragraph main ideas
+
+Practice Tips:
+
+1. Read academic articles daily
+• Science journals
+• History texts
+• Social sciences
+
+2. Build reading speed
+• Start with 250 words/minute
+• Gradually increase speed
+
+3. Practice with time limits
+• Simulate test conditions
+• Use official practice tests
+
+4. Analyze mistakes
+• Understand why answers are wrong
+• Learn from error patterns
+
+Common Mistakes to Avoid:
+
+1. Reading too slowly
+• Don't try to understand every word
+• Focus on main ideas
+
+2. Choosing answers based on memory
+• Always refer back to passage
+• Don't rely on prior knowledge
+
+3. Overthinking
+• Trust your first impression
+• Don't second-guess excessively
+
+4. Ignoring transition words
+• "However," "Therefore," "In contrast"
+• These signal relationships
+
+Remember: Practice makes perfect! Take multiple practice tests to improve your skills.`,
+        vocabulary: [
+          {
+            word: "Inference",
+            meaning: "Kesimpulan",
+            example: "Make an inference based on the passage.",
+          },
+          {
+            word: "Imply",
+            meaning: "Mengisyaratkan",
+            example: "The author implies that climate change is serious.",
+          },
+          {
+            word: "Paraphrase",
+            meaning: "Mengungkapkan kembali",
+            example: "Paraphrase the main idea in your own words.",
+          },
+          {
+            word: "Skim",
+            meaning: "Membaca sekilas",
+            example: "Skim the passage to get the main idea.",
+          },
+          {
+            word: "Scan",
+            meaning: "Memindai",
+            example: "Scan the text for specific information.",
+          },
+        ],
+        quiz: {
+          question: "How much time should you spend on each TOEFL reading passage?",
+          options: [
+            "10 minutes",
+            "20 minutes",
+            "30 minutes",
+            "40 minutes",
+          ],
+          correctAnswer: 1,
+        },
+      },
+    },
   };
 
   const lesson = lessonData[lessonId as keyof typeof lessonData];
+  
+  // Guard clause for lessons without content
+  if (!lesson) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Card className="p-8 max-w-md text-center">
+          <div className="text-6xl mb-4">📚</div>
+          <h2 className="text-2xl font-bold mb-2">Lesson Belum Tersedia</h2>
+          <p className="text-gray-600 mb-6">
+            Konten untuk lesson ini sedang dalam pengembangan. Silakan coba lesson lain atau kembali nanti.
+          </p>
+          <Button onClick={onBack} className="gap-2">
+            <ArrowLeft className="h-4 w-4" />
+            Kembali ke Course
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+  
   const steps = ["Materi", "Vocabulary", "Quiz"];
   const progressPercent = ((currentStep + 1) / steps.length) * 100;
 
@@ -518,29 +1023,67 @@ Tips:
 
               {/* Content Section */}
               <div className="p-8">
-                <div className="prose max-w-none">
-                  <div
-                    className="whitespace-pre-line text-gray-800 leading-loose text-lg font-normal animate-[fadeInUp_0.8s_ease-out] bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-inner border border-blue-200/50"
-                    style={{
-                      fontFamily: '"Georgia", "Times New Roman", serif',
-                      lineHeight: "1.8",
-                    }}
-                  >
-                    {lesson.content.text}
-                  </div>
-                </div>
+                  {/* Video Player & Transcript - Only if lesson has video */}
+                  {'videoUrl' in lesson && 'transcript' in lesson && lesson.videoUrl && lesson.transcript && lesson.transcript.length > 0 && (
+                    <div className="mb-8 space-y-6">
+                      <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-inner border border-blue-200/50">
+                        <h3 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2">
+                          🎥 Video Pembelajaran
+                        </h3>
+                        <div ref={videoPlayerRef}>
+                          <VideoPlayer
+                            videoUrl={lesson.videoUrl}
+                            onTimeUpdate={setCurrentVideoTime}
+                            onPlay={() => setIsVideoPlaying(true)}
+                            onPause={() => setIsVideoPlaying(false)}
+                          />
+                        </div>
+                      </div>
 
-                {/* Action Button */}
-                <div className="mt-8 flex justify-end animate-[slideUp_1s_ease-out]">
-                  <Button
-                    onClick={handleNext}
-                    className="gap-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-black font-bold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 px-8 py-6 text-lg"
-                    style={{ fontFamily: '"Poppins", sans-serif' }}
-                  >
-                    Lanjut ke Vocabulary
-                    <ChevronRight className="h-5 w-5 animate-[bounce_1s_ease-in-out_infinite]" />
-                  </Button>
-                </div>
+                      <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-inner border border-blue-200/50">
+                        <h3 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2">
+                          📝 Interactive Transcript
+                        </h3>
+                        <InteractiveTranscript
+                          segments={lesson.transcript}
+                          currentTime={currentVideoTime}
+                          onSegmentClick={(time) => {
+                            setCurrentVideoTime(time);
+                            if (videoPlayerRef.current) {
+                              const video = videoPlayerRef.current.querySelector('video');
+                              if (video) {
+                                video.currentTime = time;
+                              }
+                            }
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="prose max-w-none">
+                    <div
+                      className="whitespace-pre-line text-gray-800 leading-loose text-lg font-normal animate-[fadeInUp_0.8s_ease-out] bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-inner border border-blue-200/50"
+                      style={{
+                        fontFamily: '"Georgia", "Times New Roman", serif',
+                        lineHeight: "1.8",
+                      }}
+                    >
+                      {lesson.content.text}
+                    </div>
+                  </div>
+
+                  {/* Action Button */}
+                  <div className="mt-8 flex justify-end animate-[slideUp_1s_ease-out]">
+                    <Button
+                      onClick={handleNext}
+                      className="gap-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-black font-bold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 px-8 py-6 text-lg"
+                      style={{ fontFamily: '"Poppins", sans-serif' }}
+                    >
+                      Lanjut ke Vocabulary
+                      <ChevronRight className="h-5 w-5 animate-[bounce_1s_ease-in-out_infinite]" />
+                    </Button>
+                  </div>
               </div>
             </Card>
           )}
