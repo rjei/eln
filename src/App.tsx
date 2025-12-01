@@ -11,7 +11,6 @@ import { WordScrambleGame } from "./components/games/WordScrambleGame";
 import { HangmanGame } from "./components/games/HangmanGame";
 import { CrosswordGame } from "./components/games/CrosswordGame";
 import { ComprehensibleInputPage } from "./components/ComprehensibleInputPage";
-import { MaterialsPage } from "./components/MaterialsPage";
 import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner@2.0.3";
 import ClickSpark from "./components/ui/click-spark";
@@ -23,7 +22,6 @@ type Page =
   | "lesson"
   | "my-learning"
   | "comprehensible-input"
-  | "materials"
   | "games"
   | "game-wordle"
   | "game-scramble"
@@ -83,7 +81,7 @@ export default function App() {
     >
       <div
         className={`min-h-screen ${
-          currentPage.startsWith("game-") ? "" : "bg-white"
+          currentPage.startsWith("game-") ? "" : ""
         }`}
       >
         {currentPage !== "lesson" && !currentPage.startsWith("game-") && (
@@ -119,8 +117,6 @@ export default function App() {
         {currentPage === "comprehensible-input" && (
           <ComprehensibleInputPage onBack={() => setCurrentPage("home")} />
         )}
-
-        {currentPage === "materials" && <MaterialsPage />}
 
         {currentPage === "games" && (
           <GamesPage onSelectGame={handleSelectGame} />

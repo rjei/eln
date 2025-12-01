@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { useState, useRef } from "react";
 import { VideoPlayer } from "./VideoPlayer";
 import { InteractiveTranscript } from "./InteractiveTranscript";
+import { AnimatedText } from "./ui/AnimatedText";
 
 interface TranscriptSegment {
   id: number;
@@ -1010,12 +1011,14 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
             <Card className="p-0 overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-blue-300 shadow-2xl animate-[fadeIn_0.5s_ease-in]">
               {/* Header Section with Gradient */}
               <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-6">
-                <h2
-                  className="text-3xl font-black mb-2 drop-shadow-lg animate-[slideDown_0.5s_ease-out] text-black"
-                  style={{ fontFamily: '"Poppins", "Inter", sans-serif' }}
+                <AnimatedText
+                  containerClassName="mb-2"
+                  textClassName="text-white drop-shadow-lg"
+                  scrollStart="top bottom"
+                  scrollEnd="center center"
                 >
                   📚 Materi Pembelajaran
-                </h2>
+                </AnimatedText>
                 <p className="text-sm font-medium animate-[slideDown_0.7s_ease-out] text-black">
                   Pelajari dengan seksama untuk memahami konsep dasar
                 </p>
@@ -1092,12 +1095,14 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
             <Card className="p-0 overflow-hidden bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 border-2 border-orange-300 shadow-2xl animate-[fadeIn_0.5s_ease-in]">
               {/* Header Section */}
               <div className="bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 p-6">
-                <h2
-                  className="text-3xl font-black mb-2 drop-shadow-lg animate-[slideDown_0.5s_ease-out] text-black"
-                  style={{ fontFamily: '"Poppins", "Inter", sans-serif' }}
+                <AnimatedText
+                  containerClassName="mb-2"
+                  textClassName="text-white drop-shadow-lg"
+                  scrollStart="top bottom"
+                  scrollEnd="center center"
                 >
                   📖 Vocabulary
-                </h2>
+                </AnimatedText>
                 <p className="text-sm font-medium animate-[slideDown_0.7s_ease-out] text-black">
                   Pelajari kosakata penting dan contoh penggunaannya
                 </p>
@@ -1152,12 +1157,14 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
             <Card className="p-0 overflow-hidden bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 border-2 border-green-300 shadow-2xl animate-[fadeIn_0.5s_ease-in]">
               {/* Header Section */}
               <div className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 p-6">
-                <h2
-                  className="text-3xl font-black mb-2 drop-shadow-lg animate-[slideDown_0.5s_ease-out] text-black"
-                  style={{ fontFamily: '"Poppins", "Inter", sans-serif' }}
+                <AnimatedText
+                  containerClassName="mb-2"
+                  textClassName="text-white drop-shadow-lg"
+                  scrollStart="top bottom"
+                  scrollEnd="center center"
                 >
                   🎯 Quiz Time!
-                </h2>
+                </AnimatedText>
                 <p className="text-sm font-medium animate-[slideDown_0.7s_ease-out] text-black">
                   Uji pemahaman Anda dengan quiz interaktif
                 </p>
