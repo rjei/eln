@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { useState, useRef } from "react";
 import { VideoPlayer } from "./VideoPlayer";
 import { InteractiveTranscript } from "./InteractiveTranscript";
+import { RotatingText } from "./ui/RotatingText";
 
 interface TranscriptSegment {
   id: number;
@@ -1022,18 +1023,21 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
 
               {/* Content Section */}
               <div className="p-8">
-                  {/* Text content with simple animation */}
-                  <div className="prose max-w-none">
-                    <div 
-                      className="whitespace-pre-line text-gray-800 leading-loose text-lg font-normal bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-inner border border-blue-200/50"
-                      style={{
-                        fontFamily: '"Georgia", "Times New Roman", serif',
-                        lineHeight: "1.8",
-                        animation: "fadeInUp 1.5s ease-out"
-                      }}
-                    >
-                      {lesson.content.text}
-                    </div>
+                  {/* Text content with rotating text animation */}
+                  <div className="prose max-w-none bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-inner border border-blue-200/50">
+                    {lesson.content.text.split('\n\n').map((paragraph, index) => (
+                      paragraph.trim() && (
+                        <div key={index} className="mb-4 last:mb-0">
+                          <RotatingText
+                            texts={[paragraph]}
+                            rotationInterval={999999}
+                            auto={false}
+                            className="text-gray-800 leading-loose text-lg font-normal"
+                            textClassName="text-gray-800"
+                          />
+                        </div>
+                      )
+                    ))}
                   </div>
 
                   {/* Action Button */}
