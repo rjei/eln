@@ -1011,12 +1011,12 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
               {/* Header Section with Gradient */}
               <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-6">
                 <h2
-                  className="text-3xl font-black mb-2 text-white drop-shadow-lg animate-[fadeIn_0.5s_ease-in]"
+                  className="text-3xl font-black mb-2 text-white drop-shadow-lg animate-[fadeInUp_1s_ease-out]"
                   style={{ fontFamily: '"Poppins", "Inter", sans-serif' }}
                 >
                   📚 Materi Pembelajaran
                 </h2>
-                <p className="text-sm font-medium animate-[slideDown_0.7s_ease-out] text-black">
+                <p className="text-sm font-medium animate-[fadeIn_1.2s_ease-out] text-black">
                   Pelajari dengan seksama untuk memahami konsep dasar
                 </p>
               </div>
@@ -1062,7 +1062,7 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
                   )}
 
                   <div className="prose max-w-none">
-                    <div className="whitespace-pre-line text-gray-800 leading-loose text-lg font-normal bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-inner border border-blue-200/50 animate-[fadeInUp_0.8s_ease-out]"
+                    <div className="whitespace-pre-line text-gray-800 leading-loose text-lg font-normal bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-inner border border-blue-200/50 animate-[scaleIn_1.2s_ease-out]"
                       style={{
                         fontFamily: '"Georgia", "Times New Roman", serif',
                         lineHeight: "1.8",
@@ -1092,12 +1092,12 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
               {/* Header Section */}
               <div className="bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 p-6">
                 <h2
-                  className="text-3xl font-black mb-2 text-white drop-shadow-lg animate-[fadeIn_0.5s_ease-in]"
+                  className="text-3xl font-black mb-2 text-white drop-shadow-lg animate-[fadeInUp_1s_ease-out]"
                   style={{ fontFamily: '"Poppins", "Inter", sans-serif' }}
                 >
                   📖 Vocabulary
                 </h2>
-                <p className="text-sm font-medium animate-[slideDown_0.7s_ease-out] text-black">
+                <p className="text-sm font-medium animate-[fadeIn_1.2s_ease-out] text-black">
                   Pelajari kosakata penting dan contoh penggunaannya
                 </p>
               </div>
@@ -1152,12 +1152,12 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
               {/* Header Section */}
               <div className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 p-6">
                 <h2
-                  className="text-3xl font-black mb-2 text-white drop-shadow-lg animate-[fadeIn_0.5s_ease-in]"
+                  className="text-3xl font-black mb-2 text-white drop-shadow-lg animate-[fadeInUp_1s_ease-out]"
                   style={{ fontFamily: '"Poppins", "Inter", sans-serif' }}
                 >
                   🎯 Quiz Time!
                 </h2>
-                <p className="text-sm font-medium animate-[slideDown_0.7s_ease-out] text-black">
+                <p className="text-sm font-medium animate-[fadeIn_1.2s_ease-out] text-black">
                   Uji pemahaman Anda dengan quiz interaktif
                 </p>
               </div>
