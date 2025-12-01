@@ -6,7 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { useState, useRef } from "react";
 import { VideoPlayer } from "./VideoPlayer";
 import { InteractiveTranscript } from "./InteractiveTranscript";
-import { AnimatedText } from "./ui/AnimatedText";
 
 interface TranscriptSegment {
   id: number;
@@ -1011,14 +1010,12 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
             <Card className="p-0 overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-blue-300 shadow-2xl animate-[fadeIn_0.5s_ease-in]">
               {/* Header Section with Gradient */}
               <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-6">
-                <AnimatedText
-                  containerClassName="mb-2"
-                  textClassName="text-white drop-shadow-lg"
-                  scrollStart="top bottom"
-                  scrollEnd="center center"
+                <h2
+                  className="text-3xl font-black mb-2 text-white drop-shadow-lg animate-[fadeIn_0.5s_ease-in]"
+                  style={{ fontFamily: '"Poppins", "Inter", sans-serif' }}
                 >
                   📚 Materi Pembelajaran
-                </AnimatedText>
+                </h2>
                 <p className="text-sm font-medium animate-[slideDown_0.7s_ease-out] text-black">
                   Pelajari dengan seksama untuk memahami konsep dasar
                 </p>
@@ -1065,23 +1062,13 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
                   )}
 
                   <div className="prose max-w-none">
-                    <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-inner border border-blue-200/50">
-                      {lesson.content.text.split('\n\n').map((paragraph, index) => (
-                        paragraph.trim() && (
-                          <div key={index} className="mb-6 last:mb-0">
-                            <AnimatedText
-                              containerClassName="overflow-visible"
-                              textClassName="text-gray-800 leading-loose font-normal"
-                              scrollStart="top bottom-=20%"
-                              scrollEnd="center center"
-                              stagger={0.01}
-                              animationDuration={0.8}
-                            >
-                              {paragraph}
-                            </AnimatedText>
-                          </div>
-                        )
-                      ))}
+                    <div className="whitespace-pre-line text-gray-800 leading-loose text-lg font-normal bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-inner border border-blue-200/50 animate-[fadeInUp_0.8s_ease-out]"
+                      style={{
+                        fontFamily: '"Georgia", "Times New Roman", serif',
+                        lineHeight: "1.8",
+                      }}
+                    >
+                      {lesson.content.text}
                     </div>
                   </div>
 
@@ -1104,14 +1091,12 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
             <Card className="p-0 overflow-hidden bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 border-2 border-orange-300 shadow-2xl animate-[fadeIn_0.5s_ease-in]">
               {/* Header Section */}
               <div className="bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 p-6">
-                <AnimatedText
-                  containerClassName="mb-2"
-                  textClassName="text-white drop-shadow-lg"
-                  scrollStart="top bottom"
-                  scrollEnd="center center"
+                <h2
+                  className="text-3xl font-black mb-2 text-white drop-shadow-lg animate-[fadeIn_0.5s_ease-in]"
+                  style={{ fontFamily: '"Poppins", "Inter", sans-serif' }}
                 >
                   📖 Vocabulary
-                </AnimatedText>
+                </h2>
                 <p className="text-sm font-medium animate-[slideDown_0.7s_ease-out] text-black">
                   Pelajari kosakata penting dan contoh penggunaannya
                 </p>
@@ -1166,14 +1151,12 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
             <Card className="p-0 overflow-hidden bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 border-2 border-green-300 shadow-2xl animate-[fadeIn_0.5s_ease-in]">
               {/* Header Section */}
               <div className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 p-6">
-                <AnimatedText
-                  containerClassName="mb-2"
-                  textClassName="text-white drop-shadow-lg"
-                  scrollStart="top bottom"
-                  scrollEnd="center center"
+                <h2
+                  className="text-3xl font-black mb-2 text-white drop-shadow-lg animate-[fadeIn_0.5s_ease-in]"
+                  style={{ fontFamily: '"Poppins", "Inter", sans-serif' }}
                 >
                   🎯 Quiz Time!
-                </AnimatedText>
+                </h2>
                 <p className="text-sm font-medium animate-[slideDown_0.7s_ease-out] text-black">
                   Uji pemahaman Anda dengan quiz interaktif
                 </p>
