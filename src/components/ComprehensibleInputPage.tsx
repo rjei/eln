@@ -26,7 +26,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 
 interface ComprehensibleInputPageProps {
   onBack: () => void;
@@ -223,7 +223,7 @@ export function ComprehensibleInputPage({
       videoUrl:
         "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
       thumbnail:
-        "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=400",
+        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80",
       transcript: [
         {
           id: 1,
@@ -533,7 +533,7 @@ export function ComprehensibleInputPage({
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8"
-                          onClick={(e) => {
+                          onClick={(e: React.MouseEvent) => {
                             e.stopPropagation();
                             handleDeleteVideo(video.id);
                           }}

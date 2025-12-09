@@ -1,4 +1,4 @@
-import { ArrowLeft, CheckCircle2, BookOpen, ChevronRight } from "lucide-react";
+import { ArrowLeft, CheckCircle2, BookOpen, ChevronRight, Sparkles } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Progress } from "./ui/progress";
@@ -260,6 +260,215 @@ Key Phrases:
             "How are you",
           ],
           correctAnswer: 1,
+        },
+      },
+    },
+    7: {
+      title: "Numbers 1-100",
+      duration: "10 menit",
+      content: {
+        text: `Mari mulai menghafal angka 1 sampai 100 dalam bahasa Inggris. Fokus pada pola pengucapan agar kamu bisa menyebutkan nomor telepon, usia, atau tanggal dengan percaya diri.
+
+Numbers Highlights:
+• 1–10: one, two, three, four, five, six, seven, eight, nine, ten
+• 11–20: eleven, twelve, thirteen, four teen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty
+• Puluhan: twenty, thirty, forty, fifty, sixty, seventy, eighty, ninety, one hundred
+• Gabungkan: twenty-one, thirty-five, forty-six, dll.
+
+Cara belajar cepat:
+1. Latih membaca angka berkelompok (20-29, 30-39, dst.)
+2. Ucapkan angka dalam bentuk kalimat (I have twenty books).
+3. Lakukan counting backward untuk melatih listening.`,
+        vocabulary: [
+          { word: "One", meaning: "Satu", example: "One apple" },
+          { word: "Twenty", meaning: "Dua puluh", example: "Twenty minutes" },
+          { word: "Thirty-five", meaning: "Tiga puluh lima", example: "I am thirty-five years old" },
+          { word: "Hundred", meaning: "Seratus", example: "One hundred students" },
+        ],
+        quiz: {
+          question: "Bagaimana cara mengucapkan angka 47 dalam bahasa Inggris?",
+          options: ["Four ten seven", "Forty seven", "Fourty seven", "Seven forty"],
+          correctAnswer: 1,
+        },
+      },
+    },
+    8: {
+      title: "Colors & Shapes",
+      duration: "8 menit",
+      content: {
+        text: `Warna dan bentuk adalah kata dasar yang sering muncul saat mendeskripsikan lingkungan. Kita akan belajar nama warna dan bentuk sambil mempraktikkan kalimat sederhana.
+
+Colors:
+• Red, orange, yellow, green, blue, purple, pink, brown, gray, black, white
+• Contoh: "The ball is red" atau "Her dress is blue"
+
+Shapes:
+• Circle, square, triangle, rectangle, diamond, star, oval
+• Contoh penggabungan: "The yellow circle is inside the blue square"
+
+Latihan:
+1. Sebutkan objek dan warnanya di sekitar kamu.
+2. Gambarkan bentuk favorit dan sebutkan warnanya dalam bahasa Inggris.`,
+        vocabulary: [
+          { word: "Red", meaning: "Merah", example: "The apple is red" },
+          { word: "Circle", meaning: "Lingkaran", example: "Draw a circle" },
+          { word: "Square", meaning: "Persegi", example: "The window is a square" },
+          { word: "Purple", meaning: "Ungu", example: "She likes purple flowers" },
+        ],
+        quiz: {
+          question: "Bagaimana cara mengatakan 'lingkaran hijau' dalam bahasa Inggris?",
+          options: ["Green circle", "Circle green", "Green round", "Circle of green"],
+          correctAnswer: 0,
+        },
+      },
+    },
+    9: {
+      title: "Quiz: Numbers & Colors",
+      duration: "15 menit",
+      content: {
+        text: `Kombinasikan angka dan warna dalam satu soal. Kamu diminta menjawab pilihan ganda dan membuat deskripsi pendek.
+
+Jenis soal:
+• Cerita pendek: "The purple star is next to the blue circle."
+• Pilihan ganda mengenai angka dan warna yang sudah dipelajari.`,
+        vocabulary: [
+          { word: "Describe", meaning: "Menjelaskan", example: "Describe the purple circle" },
+          { word: "Pattern", meaning: "Pola", example: "The pattern repeats every five numbers" },
+          { word: "Shade", meaning: "Nuanasa", example: "A darker shade of blue" },
+        ],
+        quiz: {
+          question: "Apa jawaban yang benar untuk angka 63 dalam bahasa Inggris?",
+          options: ["Sixty-three", "Six-three", "Three sixty", "Sixty free"],
+          correctAnswer: 0,
+        },
+      },
+    },
+    10: {
+      title: "Past Perfect & Future Perfect",
+      duration: "18 menit",
+      content: {
+        text: `Past Perfect digunakan untuk mengekspresikan aksi yang telah selesai sebelum aksi lain terjadi. Future Perfect menceritakan aksi yang akan selesai sebelum waktu tertentu di masa depan.
+
+Past Perfect Formula:
+• Subject + had + past participle
+
+Future Perfect Formula:
+• Subject + will have + past participle
+
+Kunci:
+1. Past Perfect sering muncul bersama kata "before", "after", "already".
+2. Future Perfect sering dipakai dengan "by tomorrow", "by next week".
+3. Latihan: buat dua kalimat untuk setiap tense menggunakan action yang berbeda.`,
+        vocabulary: [
+          { word: "Already", meaning: "Sudah", example: "She had already left when we arrived." },
+          { word: "By then", meaning: "Saat itu", example: "By then, he will have finished the project." },
+          { word: "Had", meaning: "Telah", example: "I had visited Paris before I turned 20." },
+          { word: "Will have", meaning: "Akan sudah", example: "By midnight, we will have completed the assignment." },
+        ],
+        quiz: {
+          question: "Mana kalimat Future Perfect yang benar?",
+          options: [
+            "She will have go home by 9 PM.",
+            "She will have gone home by 9 PM.",
+            "She will had gone home by 9 PM.",
+            "She had will have gone home by 9 PM.",
+          ],
+          correctAnswer: 1,
+        },
+      },
+    },
+    11: {
+      title: "Conditional Sentences (Type 1-3)",
+      duration: "15 menit",
+      content: {
+        text: `Conditional Type 1 (real present/future): If + present simple, will + verb.
+Conditional Type 2 (unreal present): If + past simple, would + verb.
+Conditional Type 3 (past unreal): If + past perfect, would have + past participle.
+
+Tips:
+1. Gunakan type 1 untuk hal kemungkinan terjadi.
+2. Type 2 dipakai untuk situasi imajinasi sekarang.
+3. Type 3 mendeskripsikan penyesalan atau kejadian lampau yang berbeda.`,
+        vocabulary: [
+          { word: "If", meaning: "Jika", example: "If it rains, we will stay home." },
+          { word: "Would", meaning: "Akan", example: "If I had money, I would travel." },
+          { word: "Had", meaning: "Telah", example: "If he had studied, he would have passed." },
+          { word: "Will", meaning: "Akan", example: "She will come if she is invited." },
+        ],
+        quiz: {
+          question: "Pilih kalimat Conditional Type 2 yang benar:",
+          options: [
+            "If I will win, I'll celebrate tomorrow.",
+            "If I won the lottery, I would buy a house.",
+            "If I had known, I would call you now.",
+            "If he goes, he would be happy.",
+          ],
+          correctAnswer: 1,
+        },
+      },
+    },
+    12: {
+      title: "Passive Voice",
+      duration: "14 menit",
+      content: {
+        text: `Passive Voice digunakan saat fokus pada objek yang menerima aksi. Rumus: be + past participle.
+
+Contoh:
+• Active: The chef cooks the meal.
+• Passive: The meal is cooked by the chef.
+
+Latihan:
+1. Ubah kalimat aktif menjadi pasif dengan berbagai tense.
+2. Gunakan "by" untuk menyebut pelaku jika perlu.
+3. Perhatikan perubahan tense pada kata "be".`,
+        vocabulary: [
+          { word: "is/are", meaning: "adalah", example: "The letter is sent every morning." },
+          { word: "was/were", meaning: "telah", example: "The cake was eaten." },
+          { word: "being", meaning: "sedang", example: "The car is being washed." },
+          { word: "By", meaning: "oleh", example: "The novel was written by Maya." },
+        ],
+        quiz: {
+          question: "Pilih kalimat passive yang benar:",
+          options: [
+            "A new movie will released next week.",
+            "A new movie is released next week.",
+            "A new movie will be released next week.",
+            "A new movie released next week.",
+          ],
+          correctAnswer: 2,
+        },
+      },
+    },
+    13: {
+      title: "Reported Speech",
+      duration: "16 menit",
+      content: {
+        text: `Reported speech atau indirect speech dipakai untuk menyampaikan kembali apa yang dikatakan orang lain.
+
+Aturan penting:
+• Tenses mundur satu level (ex: present -> past).
+• "Say" berubah menjadi "said" atau "told".
+• Gunakan "that" untuk menghubungkan jika perlu.
+
+Praktik:
+1. Ubah kalimat langsung ke tidak langsung.
+2. Perhatikan perubahan kata keterangan waktu dan pronoun.
+3. Tambahkan "to" setelah "told" jika ada object.`,
+        vocabulary: [
+          { word: "Said", meaning: "Mengatakan", example: "He said that he was ready." },
+          { word: "Told", meaning: "Beritahu", example: "She told me to wait." },
+          { word: "That", meaning: "Bahwa", example: "He said that he liked it." },
+          { word: "Would", meaning: "Akan", example: "She said she would help." },
+        ],
+        quiz: {
+          question: "Ubah kalimat berikut ke reported speech: She said, 'I can help you.'",
+          options: [
+            "She said she could help me.",
+            "She said she can help me.",
+            "She tell me she could help.",
+            "She told I could help her.",
+          ],
+          correctAnswer: 0,
         },
       },
     },
@@ -1008,69 +1217,98 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
           {currentStep === 0 && (
-            <Card className="p-0 overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-blue-300 shadow-2xl animate-[bounce_1.5s_ease-out]">{/* Header Section with Gradient */}
-              <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-6">
-                <h2
-                  className="text-3xl font-black mb-2 text-white drop-shadow-lg animate-[slideInLeft_1.5s_ease-out]"
-                  style={{ fontFamily: '"Poppins", "Inter", sans-serif' }}
-                >
-                  📚 Materi Pembelajaran
-                </h2>
-                <p className="text-sm font-medium animate-[fadeIn_1.2s_ease-out] text-black">
-                  Pelajari dengan seksama untuk memahami konsep dasar
-                </p>
-              </div>
-
-              {/* Content Section */}
-              <div className="p-8">
-                  {/* Text content with rotating text animation */}
-                  <div className="prose max-w-none bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-inner border border-blue-200/50">
-                    <RotatingText
-                      texts={[lesson.content.text]}
-                      rotationInterval={999999}
-                      auto={false}
-                      className="whitespace-pre-line text-gray-800 leading-loose text-lg font-normal"
-                      textClassName="text-gray-800"
-                    />
+            <Card className="overflow-hidden border border-white/20 bg-gradient-to-br from-slate-900 via-slate-900/70 to-orange-950 shadow-2xl">
+              <div className="p-10 space-y-6">
+                <div className="relative overflow-hidden rounded-3xl border border-white/20 bg-white/5">
+                  <div className="absolute inset-0 bg-gradient-to-br from-orange-400/30 via-transparent to-orange-900/40 blur-3xl pointer-events-none" />
+                  <div className="relative flex items-center justify-between gap-4 p-6">
+                    <div>
+                      <p className="text-sm uppercase tracking-widest text-orange-300">
+                        Materi Pembuka
+                      </p>
+                      <div
+                        className="flex items-center gap-2 text-4xl font-extrabold leading-tight text-slate-900"
+                        style={{ fontFamily: '"Space Grotesk", "Inter", sans-serif' }}
+                      >
+                        <Sparkles className="text-orange-200" size={32} />
+                        <span>Welcome to English Learning</span>
+                      </div>
+                    </div>
+                    <div className="rounded-2xl bg-white/90 text-slate-900 px-4 py-2 font-semibold text-xs">
+                      Level 1
+                    </div>
                   </div>
+                </div>
 
-                  {/* Action Button */}
-                  <div className="mt-8 flex justify-end animate-[slideUp_1s_ease-out]">
-                    <Button
-                      onClick={handleNext}
-                      className="gap-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-black font-bold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 px-8 py-6 text-lg"
-                      style={{ fontFamily: '"Poppins", sans-serif' }}
+                <div className="relative grid gap-4 md:grid-cols-3">
+                  {[
+                    ["Durasi", "5 menit"],
+                    ["Fokus", "Vocabulary + Grammar"],
+                    ["Metode", "Interaktif"],
+                  ].map(([label, value]) => (
+                    <div
+                      key={label}
+                      className="relative rounded-2xl bg-white p-4 border-l-4 border-orange-300 shadow-lg"
                     >
-                      Lanjut ke Vocabulary
-                      <ChevronRight className="h-5 w-5 animate-[bounce_1s_ease-in-out_infinite]" />
-                    </Button>
-                  </div>
+                      <p className="text-xs uppercase tracking-widest text-slate-500">
+                        {label}
+                      </p>
+                      <p className="text-lg font-bold text-slate-900">{value}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="relative rounded-3xl border border-orange-200 bg-orange-50 p-6 shadow-inner shadow-orange-100">
+                  <p className="text-base leading-relaxed text-slate-900 whitespace-pre-line">
+                    {lesson.content.text}
+                  </p>
+                </div>
+
+                <div className="relative flex flex-wrap gap-3">
+                  {["Motivasi", "Praktik Harian", "Tips Interaktif"].map(
+                    (tag) => (
+                      <span
+                        key={tag}
+                        className="px-4 py-2 rounded-full border border-orange-200 bg-white text-sm font-medium tracking-wide text-orange-600"
+                      >
+                        {tag}
+                      </span>
+                    )
+                  )}
+                </div>
+
+                <div className="relative flex justify-end">
+                  <Button
+                    onClick={handleNext}
+                    className="gap-2 bg-gradient-to-r from-orange-400 via-orange-500 to-red-500 text-slate-900 font-bold px-8 py-5 text-lg shadow-lg shadow-orange-200"
+                  >
+                    Lanjut ke Vocabulary
+                    <ChevronRight className="h-5 w-5" />
+                  </Button>
+                </div>
               </div>
             </Card>
           )}
 
           {currentStep === 1 && (
-            <Card className="p-0 overflow-hidden bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 border-2 border-orange-300 shadow-2xl animate-[bounce_1.5s_ease-out]">
-              {/* Header Section */}
-              <div className="bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 p-6">
+            <Card className="p-0 overflow-hidden bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 border-2 border-orange-300 shadow-2xl">
+              <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-6">
                 <h2
-                  className="text-3xl font-black mb-2 text-white drop-shadow-lg animate-[slideInRight_1.5s_ease-out]"
+                  className="text-3xl font-black mb-2 text-slate-900"
                   style={{ fontFamily: '"Poppins", "Inter", sans-serif' }}
                 >
-                  📖 Vocabulary
+                  � Materi Pembelajaran
                 </h2>
-                <p className="text-sm font-medium animate-[fadeIn_1.2s_ease-out] text-black">
-                  Pelajari kosakata penting dan contoh penggunaannya
+                <p className="text-sm font-medium text-slate-900">
+                  Pelajari dengan seksama untuk memahami konsep dasar
                 </p>
               </div>
 
-              {/* Vocabulary Cards */}
               <div className="p-8 space-y-4">
                 {lesson.content.vocabulary.map((item, index) => (
                   <Card
                     key={index}
-                    className="p-6 bg-white/80 backdrop-blur-sm border-2 border-orange-200 hover:border-orange-400 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 animate-[fadeInUp_0.5s_ease-out]"
-                    style={{ animationDelay: `${index * 0.1}s` }}
+                    className="p-6 bg-white/80 backdrop-blur-sm border-2 border-orange-200 hover:border-orange-400 shadow-lg transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1"
                   >
                     <div className="flex items-start justify-between mb-3">
                       <h3
@@ -1095,38 +1333,35 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
                 ))}
               </div>
 
-              {/* Action Button */}
-              <div className="px-8 pb-8 flex justify-end animate-[slideUp_1s_ease-out]">
+              <div className="px-8 pb-8 flex justify-end">
                 <Button
                   onClick={handleNext}
                   className="gap-2 bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 hover:from-orange-600 hover:via-amber-600 hover:to-yellow-600 text-black font-bold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 px-8 py-6 text-lg"
                   style={{ fontFamily: '"Poppins", sans-serif' }}
                 >
                   Lanjut ke Quiz
-                  <ChevronRight className="h-5 w-5 animate-[bounce_1s_ease-in-out_infinite]" />
+                  <ChevronRight className="h-5 w-5" />
                 </Button>
               </div>
             </Card>
           )}
 
           {currentStep === 2 && (
-            <Card className="p-0 overflow-hidden bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 border-2 border-green-300 shadow-2xl animate-[bounce_1.5s_ease-out]">
-              {/* Header Section */}
+            <Card className="p-0 overflow-hidden bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 border-2 border-green-300 shadow-2xl">
               <div className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 p-6">
                 <h2
-                  className="text-3xl font-black mb-2 text-white drop-shadow-lg animate-[slideInLeft_1.5s_ease-out]"
+                  className="text-3xl font-black mb-2 text-white"
                   style={{ fontFamily: '"Poppins", "Inter", sans-serif' }}
                 >
                   🎯 Quiz Time!
                 </h2>
-                <p className="text-sm font-medium animate-[fadeIn_1.2s_ease-out] text-black">
+                <p className="text-sm font-medium text-black">
                   Uji pemahaman Anda dengan quiz interaktif
                 </p>
               </div>
 
-              {/* Quiz Content */}
               <div className="p-8">
-                <div className="mb-8 bg-white/80 backdrop-blur-sm p-6 rounded-xl border-2 border-green-200 shadow-lg animate-[fadeInUp_0.6s_ease-out]">
+                <div className="mb-8 bg-white/80 backdrop-blur-sm p-6 rounded-xl border-2 border-green-200 shadow-lg">
                   <p
                     className="text-xl font-semibold text-gray-800 leading-relaxed"
                     style={{ fontFamily: '"Poppins", sans-serif' }}
@@ -1141,7 +1376,7 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
                       key={index}
                       onClick={() => handleQuizAnswer(index)}
                       disabled={showResult}
-                      className={`w-full p-5 text-left rounded-xl border-3 transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 shadow-md hover:shadow-xl animate-[fadeInUp_0.5s_ease-out] ${
+                      className={`w-full p-5 text-left rounded-xl border-3 transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 shadow-md hover:shadow-xl ${
                         !showResult
                           ? "border-2 border-gray-300 bg-white/80 hover:border-green-500 hover:bg-green-50"
                           : index === lesson.content.quiz.correctAnswer

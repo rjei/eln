@@ -1,0 +1,15 @@
+[33m4e30e06[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/magic-bento-ui[m[33m, [m[1;31morigin/feature/magic-bento-ui[m[33m)[m feat: Add Magic Bento UI with animated cards, classroom images, and vocabulary redesign
+[33mb8d4f08[m[33m ([m[1;31morigin/feature/enhanced-ui-animations[m[33m, [m[1;32mfeature/enhanced-ui-animations[m[33m)[m Preserve line breaks and paragraphs in RotatingText animation
+[33mfc47f10[m Apply RotatingText animation to lesson content paragraphs
+[33m7e7648e[m Fix text formatting - use whitespace-pre-line with simple fadeInUp animation
+[33m435740a[m Remove video/transcript from lesson, apply GSAP animation to text content only
+[33md3963a1[m Add dramatic bounce and slide animations to lesson cards and headings
+[33m9096a49[m Increase animation duration and visibility for lesson sections
+[33mfbd75b9[m Simplify lesson animations - remove scroll-triggered text to show all content
+[33m43687f6[m Apply GSAP scroll animation to lesson content paragraphs
+[33mace96da[m Add GSAP scroll-triggered animated text to all lesson section headings
+[33m86bdbdf[m Add scroll reveal text animation and material cards with animations
+[33m5a7b77a[m Add glassmorphism navbar blur effect and restore all features
+[33ma5dcc5e[m Merge: Keep enhanced UI features with animations and Intermediate course
+[33m7842535[m Add enhanced UI with animations and Intermediate course content
+[33mca16dd2[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m initial commit

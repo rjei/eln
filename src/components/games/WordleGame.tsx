@@ -367,7 +367,7 @@ export function WordleGame({ onBack }: WordleGameProps) {
 
           <div className="text-center">
             <h1 className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-green-300 via-emerald-200 to-teal-300 bg-clip-text text-transparent mb-1 animate-gradient drop-shadow-lg">
-              ≡ƒîƒ English Wordle ≡ƒîƒ
+                 English Wordle 
             </h1>
             <p className="text-xs sm:text-sm text-green-100 font-bold flex items-center justify-center gap-2">
               <Sparkles className="h-4 w-4 text-yellow-300 animate-pulse" />
@@ -612,7 +612,7 @@ export function WordleGame({ onBack }: WordleGameProps) {
                 won ? "animate-bounce" : ""
               }`}
             >
-              {won ? "≡ƒÅå" : gameOver ? "≡ƒÆ¬" : "≡ƒÄ»"}
+              {won ? "win" : gameOver ? "lose" : "bermain"}
             </div>
             <div className="text-xs sm:text-sm font-bold text-teal-800">
               Status
@@ -628,10 +628,10 @@ export function WordleGame({ onBack }: WordleGameProps) {
               <>
                 <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 text-6xl animate-bounce-in z-10 drop-shadow-lg"></div>
                 <div className="absolute -top-8 left-1/4 text-4xl animate-float animation-delay-100 drop-shadow-lg">
-                  Γ¡É
+                 🌟
                 </div>
                 <div className="absolute -top-8 right-1/4 text-4xl animate-float animation-delay-200 drop-shadow-lg">
-                  Γ£¿
+                 🌟
                 </div>
               </>
             )}
@@ -663,7 +663,7 @@ export function WordleGame({ onBack }: WordleGameProps) {
                     won ? "animate-bounce-in" : "animate-shake-gentle"
                   }`}
                 >
-                  {won ? "≡ƒÄë" : " "}
+                  {won ? "😝" : " "}
                 </div>
 
                 {/* Title */}
@@ -672,7 +672,7 @@ export function WordleGame({ onBack }: WordleGameProps) {
                     won ? "animate-slide-down" : "animate-fade-in"
                   }`}
                 >
-                  {won ? "≡ƒîƒ Luar Biasa! ≡ƒîƒ" : "Hampir Berhasil!"}
+                  {won ? "Luar Biasa!" : "Hampir Berhasil!"}
                 </div>
 
                 {/* Subtitle */}
@@ -730,10 +730,10 @@ export function WordleGame({ onBack }: WordleGameProps) {
                     <div className="bg-white/95 rounded-xl p-4 border-2 border-white shadow-lg">
                       <div className="text-2xl font-bold">
                         {currentRow <= 2
-                          ? "Γ¡ÉΓ¡ÉΓ¡É"
+                          ? "90"
                           : currentRow <= 4
-                          ? "Γ¡ÉΓ¡É"
-                          : "Γ¡É"}
+                          ? "30"
+                          : "30"}
                       </div>
                       <div className="text-sm text-gray-700 font-semibold">
                         Rating
