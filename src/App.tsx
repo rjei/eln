@@ -134,7 +134,7 @@ export default function App() {
         )}
 
         {currentPage === "my-learning" && (
-          <MyLearning onNavigate={handleNavigate} />
+          <MyLearning onNavigate={handleNavigate} onLessonStart={handleStartLesson} />
         )}
 
         {currentPage === "profile" && (

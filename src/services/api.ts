@@ -184,6 +184,29 @@ export const updateProgress = async (data: ProgressData): Promise<void> => {
     });
 };
 
+// Get user's progress for a specific course
+export interface UserProgress {
+    id: number;
+    lessonId: number;
+    courseId: number;
+    progress: number;
+    completed: boolean;
+    timeSpent: number;
+    completedAt: string | null;
+}
+
+export const getProgressByCourse = async (courseId: number): Promise<UserProgress[]> => {
+    try {
+        const response = await apiRequest<{ status: number; payload: UserProgress[] }>(
+            `/progress/course/${courseId}`
+        );
+        return response.payload || [];
+    } catch {
+        // Return empty array if not authenticated or error
+        return [];
+    }
+};
+
 // ============ Error Handler ============
 
 export const isAuthenticated = (): boolean => {

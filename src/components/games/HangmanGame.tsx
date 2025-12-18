@@ -1,25 +1,22 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, RotateCcw, Heart } from "lucide-react";
+import { ArrowLeft, RotateCcw, Heart, Loader2, Trophy, Star } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 import Shuffle from "../ui/Shuffle";
 
 interface HangmanGameProps {
   onBack: () => void;
 }
 
-const WORDS = [
+// API Base URL
+const API_BASE_URL = "http://localhost:5000/api";
+
+// Fallback words in case API fails
+const FALLBACK_WORDS = [
   { word: "BEAUTIFUL", hint: "Attractive or pleasing", category: "Adjective" },
   { word: "CHOCOLATE", hint: "Sweet brown food", category: "Food" },
   { word: "ADVENTURE", hint: "Exciting experience", category: "Noun" },
-  { word: "TELEPHONE", hint: "Device for calling", category: "Object" },
-  { word: "BUTTERFLY", hint: "Insect with colorful wings", category: "Animal" },
-  { word: "EDUCATION", hint: "Process of learning", category: "Concept" },
-  { word: "HAPPINESS", hint: "Feeling of joy", category: "Emotion" },
-  { word: "IMPORTANT", hint: "Very significant", category: "Adjective" },
-  { word: "WONDERFUL", hint: "Extremely good", category: "Adjective" },
-  { word: "KNOWLEDGE", hint: "What you know", category: "Concept" },
 ];
 
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -35,8 +32,69 @@ export function HangmanGame({ onBack }: HangmanGameProps) {
   const [gameOver, setGameOver] = useState(false);
   const [won, setWon] = useState(false);
   const [score, setScore] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   const MAX_WRONG = 6;
+
+  // Fetch word from API
+  const fetchQuestion = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/games/hangman/question`);
+      const data = await response.json();
+
+      if (data.status === 200 && data.payload?.content) {
+        const content = data.payload.content;
+        console.log("[Hangman] Got word from API:", content.word);
+        return {
+          word: content.word.toUpperCase(),
+          hint: content.clue || "Guess the word!",
+          category: data.payload.difficulty?.charAt(0).toUpperCase() + data.payload.difficulty?.slice(1) || "Word"
+        };
+      }
+      throw new Error("Invalid response");
+    } catch (error) {
+      console.error("[Hangman] API error, using fallback:", error);
+      return FALLBACK_WORDS[Math.floor(Math.random() * FALLBACK_WORDS.length)];
+    }
+  };
+
+  // Save score and get level up info
+  const saveScore = async (pointsEarned: number) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.log('[Hangman] No token, skipping score save');
+      return null;
+    }
+
+    try {
+      setSaving(true);
+      const response = await fetch(`${API_BASE_URL}/games/score`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          gameType: 'hangman',
+          score: pointsEarned,
+          timeSpent: 0
+        })
+      });
+
+      const data = await response.json();
+      if (data.status === 201) {
+        console.log('[Hangman] Score saved:', data.payload);
+        return data.payload;
+      }
+      return null;
+    } catch (error) {
+      console.error('[Hangman] Error saving score:', error);
+      return null;
+    } finally {
+      setSaving(false);
+    }
+  };
 
   useEffect(() => {
     loadNewWord();
@@ -44,7 +102,7 @@ export function HangmanGame({ onBack }: HangmanGameProps) {
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (gameOver) return;
+      if (gameOver || loading) return;
 
       const key = e.key.toUpperCase();
       if (ALPHABET.includes(key)) {
@@ -54,30 +112,67 @@ export function HangmanGame({ onBack }: HangmanGameProps) {
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [gameOver, guessedLetters, currentWord]);
+  }, [gameOver, guessedLetters, currentWord, loading]);
 
   useEffect(() => {
-    if (gameOver) return;
+    if (gameOver || loading) return;
 
     const wordLetters = currentWord.word.split("").filter((l) => l !== " ");
     const uniqueLetters = new Set(wordLetters);
     const correctGuesses = guessedLetters.filter((l) => uniqueLetters.has(l));
 
     if (correctGuesses.length === uniqueLetters.size && currentWord.word) {
-      setWon(true);
-      setGameOver(true);
-      setScore(score + 1);
+      handleWin();
+    }
+  }, [guessedLetters, currentWord, loading]);
+
+  const handleWin = async () => {
+    setWon(true);
+    setGameOver(true);
+    setScore(score + 1);
+
+    // Calculate points based on remaining lives
+    const livesRemaining = MAX_WRONG - wrongGuesses;
+    const pointsEarned = 50 + (livesRemaining * 10); // Base 50 + bonus per life
+
+    // Save score to backend
+    const result = await saveScore(pointsEarned);
+
+    if (result) {
+      if (result.isLevelUp) {
+        // Level Up notification
+        toast.success(
+          `🚀 LEVEL UP! Sekarang Level ${result.newLevel}!`,
+          {
+            description: `+${result.xpAdded} XP | Total: ${result.totalPoints} XP`,
+            duration: 5000,
+          }
+        );
+      } else {
+        // Normal win notification
+        toast.success(
+          `🎉 Menang! +${result.xpAdded} XP`,
+          {
+            description: `Level ${result.newLevel} | Total: ${result.totalPoints} XP`,
+            duration: 4000,
+          }
+        );
+      }
+    } else {
       toast.success("🎉 Selamat! Kamu berhasil menebak kata!");
     }
-  }, [guessedLetters, currentWord]);
+  };
 
-  const loadNewWord = () => {
-    const newWord = WORDS[Math.floor(Math.random() * WORDS.length)];
-    setCurrentWord(newWord);
+  const loadNewWord = async () => {
+    setLoading(true);
     setGuessedLetters([]);
     setWrongGuesses(0);
     setGameOver(false);
     setWon(false);
+
+    const newWord = await fetchQuestion();
+    setCurrentWord(newWord);
+    setLoading(false);
   };
 
   const handleGuess = (letter: string) => {
@@ -187,9 +282,8 @@ export function HangmanGame({ onBack }: HangmanGameProps) {
       <svg
         width="200"
         height="200"
-        className={`mx-auto mb-6 transition-all duration-300 ${
-          wrongGuesses >= 4 ? "text-red-600 animate-pulse" : "text-gray-700"
-        }`}
+        className={`mx-auto mb-6 transition-all duration-300 ${wrongGuesses >= 4 ? "text-red-600 animate-pulse" : "text-gray-700"
+          }`}
       >
         {/* Gallows */}
         <line
@@ -297,11 +391,10 @@ export function HangmanGame({ onBack }: HangmanGameProps) {
               {Array.from({ length: MAX_WRONG }).map((_, i) => (
                 <Heart
                   key={i}
-                  className={`h-5 w-5 transition-all duration-300 ${
-                    i < MAX_WRONG - wrongGuesses
-                      ? "fill-red-500 text-red-500 animate-pulse"
-                      : "text-gray-300"
-                  }`}
+                  className={`h-5 w-5 transition-all duration-300 ${i < MAX_WRONG - wrongGuesses
+                    ? "fill-red-500 text-red-500 animate-pulse"
+                    : "text-gray-300"
+                    }`}
                 />
               ))}
             </div>
@@ -310,23 +403,20 @@ export function HangmanGame({ onBack }: HangmanGameProps) {
             </div>
           </Card>
           <Card
-            className={`p-3 sm:p-4 text-center border-2 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 ${
-              wrongGuesses >= 4
-                ? "bg-gradient-to-br from-red-100 to-orange-100 border-red-500 animate-pulse"
-                : "bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-400"
-            }`}
+            className={`p-3 sm:p-4 text-center border-2 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 ${wrongGuesses >= 4
+              ? "bg-gradient-to-br from-red-100 to-orange-100 border-red-500 animate-pulse"
+              : "bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-400"
+              }`}
           >
             <div
-              className={`text-2xl sm:text-3xl mb-1 font-black ${
-                wrongGuesses >= 4 ? "text-red-600" : "text-blue-600"
-              }`}
+              className={`text-2xl sm:text-3xl mb-1 font-black ${wrongGuesses >= 4 ? "text-red-600" : "text-blue-600"
+                }`}
             >
               {wrongGuesses}/{MAX_WRONG}
             </div>
             <div
-              className={`text-xs sm:text-sm font-bold ${
-                wrongGuesses >= 4 ? "text-red-700" : "text-blue-700"
-              }`}
+              className={`text-xs sm:text-sm font-bold ${wrongGuesses >= 4 ? "text-red-700" : "text-blue-700"
+                }`}
             >
               ❌ Kesalahan
             </div>
@@ -429,13 +519,12 @@ export function HangmanGame({ onBack }: HangmanGameProps) {
                       key={letter}
                       onClick={() => handleGuess(letter)}
                       disabled={isGuessed || gameOver}
-                      className={`w-10 h-10 p-0 font-black text-base transition-all duration-300 ${
-                        isGuessed
-                          ? isCorrect
-                            ? "bg-gradient-to-br from-green-500 to-emerald-600 hover:bg-green-500 text-black shadow-lg animate-bounce-in"
-                            : "bg-gradient-to-br from-red-500 to-rose-600 hover:bg-red-500 text-black shadow-lg animate-bounce-in"
-                          : "hover:scale-110 hover:bg-blue-50 hover:border-blue-400"
-                      }`}
+                      className={`w-10 h-10 p-0 font-black text-base transition-all duration-300 ${isGuessed
+                        ? isCorrect
+                          ? "bg-gradient-to-br from-green-500 to-emerald-600 hover:bg-green-500 text-black shadow-lg animate-bounce-in"
+                          : "bg-gradient-to-br from-red-500 to-rose-600 hover:bg-red-500 text-black shadow-lg animate-bounce-in"
+                        : "hover:scale-110 hover:bg-blue-50 hover:border-blue-400"
+                        }`}
                       variant={isGuessed ? "default" : "outline"}
                     >
                       {letter}

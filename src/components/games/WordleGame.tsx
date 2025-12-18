@@ -1,8 +1,8 @@
 ﻿import { useState, useEffect, useRef } from "react";
-import { ArrowLeft, HelpCircle, RotateCcw, Sparkles } from "lucide-react";
+import { ArrowLeft, HelpCircle, RotateCcw, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -16,32 +16,11 @@ interface WordleGameProps {
   onBack: () => void;
 }
 
-const WORDS = [
-  "APPLE",
-  "BREAD",
-  "CHAIR",
-  "DRINK",
-  "EARTH",
-  "FRUIT",
-  "GRAPE",
-  "HEART",
-  "IMAGE",
-  "JUICE",
-  "KNIFE",
-  "LEMON",
-  "MONTH",
-  "NIGHT",
-  "OCEAN",
-  "PHONE",
-  "QUEEN",
-  "RIVER",
-  "SUGAR",
-  "TABLE",
-  "UNDER",
-  "VOICE",
-  "WATER",
-  "WORLD",
-];
+// API Base URL
+const API_BASE_URL = "http://localhost:5000/api";
+
+// Fallback words in case API fails
+const FALLBACK_WORDS = ["APPLE", "BRAIN", "CHAIR", "DANCE", "EARTH"];
 
 type LetterState = "correct" | "present" | "absent" | "empty";
 
@@ -74,6 +53,8 @@ export function WordleGame({ onBack }: WordleGameProps) {
   const [particles, setParticles] = useState<Particle[]>([]);
   const [revealingRow, setRevealingRow] = useState<number | null>(null);
   const [bounceWin, setBounceWin] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const gameOverRef = useRef<HTMLDivElement>(null);
 
   const MAX_GUESSES = 6;
@@ -85,13 +66,69 @@ export function WordleGame({ onBack }: WordleGameProps) {
     ["ENTER", "Z", "X", "C", "V", "B", "N", "M", "BACK"],
   ];
 
+  // Fetch word from API
+  const fetchQuestion = async (): Promise<string> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/games/wordle/question`);
+      const data = await response.json();
+
+      if (data.status === 200 && data.payload?.content?.word) {
+        const word = data.payload.content.word.toUpperCase();
+        console.log("[Wordle] Got word from API:", word);
+        return word;
+      }
+      throw new Error("Invalid response");
+    } catch (error) {
+      console.error("[Wordle] API error, using fallback:", error);
+      // Use a random fallback word
+      return FALLBACK_WORDS[Math.floor(Math.random() * FALLBACK_WORDS.length)];
+    }
+  };
+
+  // Save score and get level up info
+  const saveScore = async (pointsEarned: number) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.log('[Wordle] No token, skipping score save');
+      return null;
+    }
+
+    try {
+      setSaving(true);
+      const response = await fetch(`${API_BASE_URL}/games/score`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          gameType: 'wordle',
+          score: pointsEarned,
+          timeSpent: 0
+        })
+      });
+
+      const data = await response.json();
+      if (data.status === 201) {
+        console.log('[Wordle] Score saved:', data.payload);
+        return data.payload;
+      }
+      return null;
+    } catch (error) {
+      console.error('[Wordle] Error saving score:', error);
+      return null;
+    } finally {
+      setSaving(false);
+    }
+  };
+
   useEffect(() => {
     initializeGame();
   }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (gameOver) return;
+      if (gameOver || loading) return;
 
       if (e.key === "Enter") {
         handleSubmitGuess();
@@ -104,11 +141,10 @@ export function WordleGame({ onBack }: WordleGameProps) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentGuess, gameOver, currentRow]);
+  }, [currentGuess, gameOver, currentRow, loading]);
 
-  const initializeGame = () => {
-    const randomWord = WORDS[Math.floor(Math.random() * WORDS.length)];
-    setTargetWord(randomWord);
+  const initializeGame = async () => {
+    setLoading(true);
     setCurrentGuess("");
     setGuesses([]);
     setCurrentRow(0);
@@ -119,6 +155,11 @@ export function WordleGame({ onBack }: WordleGameProps) {
     setParticles([]);
     setRevealingRow(null);
     setBounceWin(false);
+
+    // Fetch word from API
+    const word = await fetchQuestion();
+    setTargetWord(word);
+    setLoading(false);
   };
 
   const createConfetti = () => {
@@ -251,7 +292,7 @@ export function WordleGame({ onBack }: WordleGameProps) {
     });
 
     // Check results after all reveals
-    setTimeout(() => {
+    setTimeout(async () => {
       setKeyboardState(newKeyboardState);
       setRevealingRow(null);
 
@@ -261,9 +302,37 @@ export function WordleGame({ onBack }: WordleGameProps) {
         setGameOver(true);
         setBounceWin(true);
         createConfetti();
-        toast.success(
-          `≡ƒÄë Selamat! Kamu menemukan kata dalam ${currentRow + 1} percobaan!`
-        );
+
+        // Calculate points: More points for fewer guesses
+        const guessesUsed = currentRow + 1;
+        const pointsEarned = 100 - ((guessesUsed - 1) * 15); // 100 for 1st guess, 85 for 2nd, etc.
+
+        // Save score to backend
+        const result = await saveScore(Math.max(pointsEarned, 25)); // Minimum 25 points
+
+        if (result) {
+          if (result.isLevelUp) {
+            toast.success(
+              `🚀 LEVEL UP! Sekarang Level ${result.newLevel}!`,
+              {
+                description: `+${result.xpAdded} XP | Total: ${result.totalPoints} XP`,
+                duration: 5000,
+              }
+            );
+          } else {
+            toast.success(
+              `🎉 Menang! +${result.xpAdded} XP`,
+              {
+                description: `Level ${result.newLevel} | Total: ${result.totalPoints} XP`,
+                duration: 4000,
+              }
+            );
+          }
+        } else {
+          toast.success(
+            `🎉 Selamat! Kamu menemukan kata dalam ${guessesUsed} percobaan!`
+          );
+        }
 
         // Scroll to game over message
         setTimeout(() => {
@@ -367,7 +436,7 @@ export function WordleGame({ onBack }: WordleGameProps) {
 
           <div className="text-center">
             <h1 className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-green-300 via-emerald-200 to-teal-300 bg-clip-text text-transparent mb-1 animate-gradient drop-shadow-lg">
-                 English Wordle 
+              English Wordle
             </h1>
             <p className="text-xs sm:text-sm text-green-100 font-bold flex items-center justify-center gap-2">
               <Sparkles className="h-4 w-4 text-yellow-300 animate-pulse" />
@@ -468,9 +537,8 @@ export function WordleGame({ onBack }: WordleGameProps) {
         {/* Game Board */}
         <Card className="p-4 sm:p-6 mb-4 shadow-2xl bg-white/95 backdrop-blur-sm border-4 border-green-300 hover:shadow-green-500/50 hover:shadow-2xl transition-all duration-300 animate-slide-up">
           <div
-            className={`space-y-1.5 sm:space-y-2 mb-4 sm:mb-6 ${
-              shake ? "animate-shake" : ""
-            }`}
+            className={`space-y-1.5 sm:space-y-2 mb-4 sm:mb-6 ${shake ? "animate-shake" : ""
+              }`}
           >
             {Array.from({ length: MAX_GUESSES }).map((_, rowIndex) => (
               <div
@@ -509,9 +577,8 @@ export function WordleGame({ onBack }: WordleGameProps) {
                   return (
                     <div
                       key={colIndex}
-                      className={`relative h-12 w-12 sm:h-14 sm:w-14 transition-all duration-300 ${
-                        shouldAnimate ? "animate-flip" : ""
-                      }`}
+                      className={`relative h-12 w-12 sm:h-14 sm:w-14 transition-all duration-300 ${shouldAnimate ? "animate-flip" : ""
+                        }`}
                       style={{
                         animationDelay: shouldAnimate
                           ? `${colIndex * 300}ms`
@@ -521,24 +588,20 @@ export function WordleGame({ onBack }: WordleGameProps) {
                       <div
                         className={`h-full w-full border-2 rounded-lg flex items-center justify-center text-xl sm:text-2xl font-bold transition-all duration-300 transform ${getCellColor(
                           cellState.revealed ? cellState.state : "empty"
-                        )} ${
-                          isCurrentCell
-                            ? "ring-4 ring-green-400 ring-offset-2 animate-pulse scale-110 shadow-lg shadow-green-300/50"
-                            : ""
-                        } ${
-                          cellState.letter && !cellState.revealed
+                        )} ${isCurrentCell
+                          ? "ring-4 ring-green-400 ring-offset-2 animate-pulse scale-110 shadow-lg shadow-green-300/50"
+                          : ""
+                          } ${cellState.letter && !cellState.revealed
                             ? "scale-105 animate-pop border-gray-400"
                             : "scale-100"
-                        } ${cellState.revealed ? "shadow-lg" : "shadow-md"} ${
-                          shouldGlow
+                          } ${cellState.revealed ? "shadow-lg" : "shadow-md"} ${shouldGlow
                             ? "animate-glow-pulse shadow-green-400/50 shadow-2xl"
                             : ""
-                        } hover:scale-105 relative z-0`}
+                          } hover:scale-105 relative z-0`}
                       >
                         <span
-                          className={`${
-                            cellState.letter ? "animate-bounce-in" : ""
-                          }`}
+                          className={`${cellState.letter ? "animate-bounce-in" : ""
+                            }`}
                         >
                           {cellState.letter}
                         </span>
@@ -559,13 +622,12 @@ export function WordleGame({ onBack }: WordleGameProps) {
                     key={key}
                     onClick={() => handleKeyClick(key)}
                     disabled={gameOver}
-                    className={`h-14 sm:h-16 font-bold text-sm sm:text-base ${
-                      key === "ENTER" || key === "BACK"
-                        ? "px-3 sm:px-5 min-w-[58px] sm:min-w-[75px]"
-                        : "w-10 sm:w-[52px] px-0"
-                    } ${getKeyColor(
-                      key
-                    )} transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed`}
+                    className={`h-14 sm:h-16 font-bold text-sm sm:text-base ${key === "ENTER" || key === "BACK"
+                      ? "px-3 sm:px-5 min-w-[58px] sm:min-w-[75px]"
+                      : "w-10 sm:w-[52px] px-0"
+                      } ${getKeyColor(
+                        key
+                      )} transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed`}
                     variant="secondary"
                   >
                     {key === "BACK" ? "Γî½" : key}
@@ -579,9 +641,8 @@ export function WordleGame({ onBack }: WordleGameProps) {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-2 sm:gap-3">
           <Card
-            className={`p-3 sm:p-4 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-green-100 to-emerald-200 border-4 border-green-300 shadow-lg ${
-              bounceWin ? "animate-bounce-slow" : ""
-            }`}
+            className={`p-3 sm:p-4 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-green-100 to-emerald-200 border-4 border-green-300 shadow-lg ${bounceWin ? "animate-bounce-slow" : ""
+              }`}
           >
             <div className="text-2xl sm:text-3xl font-black text-green-700 mb-1">
               {currentRow}
@@ -591,9 +652,8 @@ export function WordleGame({ onBack }: WordleGameProps) {
             </div>
           </Card>
           <Card
-            className={`p-3 sm:p-4 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-emerald-100 to-teal-200 border-4 border-emerald-300 shadow-lg ${
-              bounceWin ? "animate-bounce-slow animation-delay-100" : ""
-            }`}
+            className={`p-3 sm:p-4 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-emerald-100 to-teal-200 border-4 border-emerald-300 shadow-lg ${bounceWin ? "animate-bounce-slow animation-delay-100" : ""
+              }`}
           >
             <div className="text-2xl sm:text-3xl font-black text-emerald-700 mb-1">
               {MAX_GUESSES - currentRow}
@@ -603,14 +663,12 @@ export function WordleGame({ onBack }: WordleGameProps) {
             </div>
           </Card>
           <Card
-            className={`p-3 sm:p-4 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-teal-100 to-cyan-200 border-4 border-teal-300 shadow-lg ${
-              bounceWin ? "animate-bounce-slow animation-delay-200" : ""
-            }`}
+            className={`p-3 sm:p-4 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-teal-100 to-cyan-200 border-4 border-teal-300 shadow-lg ${bounceWin ? "animate-bounce-slow animation-delay-200" : ""
+              }`}
           >
             <div
-              className={`text-2xl sm:text-3xl mb-1 ${
-                won ? "animate-bounce" : ""
-              }`}
+              className={`text-2xl sm:text-3xl mb-1 ${won ? "animate-bounce" : ""
+                }`}
             >
               {won ? "win" : gameOver ? "lose" : "bermain"}
             </div>
@@ -628,20 +686,19 @@ export function WordleGame({ onBack }: WordleGameProps) {
               <>
                 <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 text-6xl animate-bounce-in z-10 drop-shadow-lg"></div>
                 <div className="absolute -top-8 left-1/4 text-4xl animate-float animation-delay-100 drop-shadow-lg">
-                 🌟
+                  🌟
                 </div>
                 <div className="absolute -top-8 right-1/4 text-4xl animate-float animation-delay-200 drop-shadow-lg">
-                 🌟
+                  🌟
                 </div>
               </>
             )}
 
             <Card
-              className={`p-8 text-center ${
-                won
-                  ? "bg-gradient-to-br from-green-700 via-emerald-800 to-teal-900"
-                  : "bg-gradient-to-br from-red-800 via-rose-900 to-purple-900"
-              } shadow-2xl border-0 relative overflow-hidden animate-scale-in`}
+              className={`p-8 text-center ${won
+                ? "bg-gradient-to-br from-green-700 via-emerald-800 to-teal-900"
+                : "bg-gradient-to-br from-red-800 via-rose-900 to-purple-900"
+                } shadow-2xl border-0 relative overflow-hidden animate-scale-in`}
             >
               {/* Animated background pattern */}
               <div className="absolute inset-0 opacity-10">
@@ -659,29 +716,26 @@ export function WordleGame({ onBack }: WordleGameProps) {
               <div className="relative z-10">
                 {/* Icon/Emoji */}
                 <div
-                  className={`text-7xl mb-4 drop-shadow-2xl ${
-                    won ? "animate-bounce-in" : "animate-shake-gentle"
-                  }`}
+                  className={`text-7xl mb-4 drop-shadow-2xl ${won ? "animate-bounce-in" : "animate-shake-gentle"
+                    }`}
                 >
                   {won ? "😝" : " "}
                 </div>
 
                 {/* Title */}
                 <div
-                  className={`text-5xl font-black mb-4 text-yellow-300 ${
-                    won ? "animate-slide-down" : "animate-fade-in"
-                  }`}
+                  className={`text-5xl font-black mb-4 text-yellow-300 ${won ? "animate-slide-down" : "animate-fade-in"
+                    }`}
                 >
                   {won ? "Luar Biasa!" : "Hampir Berhasil!"}
                 </div>
 
                 {/* Subtitle */}
                 <div
-                  className={`text-2xl mb-8 text-yellow-200 font-bold ${
-                    won
-                      ? "animate-slide-down animation-delay-100"
-                      : "animate-fade-in animation-delay-100"
-                  }`}
+                  className={`text-2xl mb-8 text-yellow-200 font-bold ${won
+                    ? "animate-slide-down animation-delay-100"
+                    : "animate-fade-in animation-delay-100"
+                    }`}
                 >
                   {won
                     ? `Kamu menemukan kata dalam ${currentRow} percobaan!`
@@ -732,8 +786,8 @@ export function WordleGame({ onBack }: WordleGameProps) {
                         {currentRow <= 2
                           ? "90"
                           : currentRow <= 4
-                          ? "30"
-                          : "30"}
+                            ? "30"
+                            : "30"}
                       </div>
                       <div className="text-sm text-gray-700 font-semibold">
                         Rating
@@ -747,13 +801,11 @@ export function WordleGame({ onBack }: WordleGameProps) {
                   <Button
                     onClick={initializeGame}
                     size="lg"
-                    className={`bg-white ${
-                      won
-                        ? "text-green-700 hover:bg-green-50 hover:text-green-800"
-                        : "text-red-700 hover:bg-red-50 hover:text-red-800"
-                    } hover:scale-110 transition-all duration-300 font-extrabold shadow-2xl hover:shadow-3xl px-8 py-6 text-lg group border-2 ${
-                      won ? "border-green-300" : "border-red-300"
-                    }`}
+                    className={`bg-white ${won
+                      ? "text-green-700 hover:bg-green-50 hover:text-green-800"
+                      : "text-red-700 hover:bg-red-50 hover:text-red-800"
+                      } hover:scale-110 transition-all duration-300 font-extrabold shadow-2xl hover:shadow-3xl px-8 py-6 text-lg group border-2 ${won ? "border-green-300" : "border-red-300"
+                      }`}
                   >
                     <RotateCcw className="h-5 w-5 mr-2 group-hover:rotate-180 transition-transform duration-500" />
                     Main Lagi

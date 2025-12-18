@@ -1,8 +1,18 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
-import { Mail, Phone, MapPin, User } from "lucide-react";
+import { Progress } from "./ui/progress";
+import { Mail, Phone, MapPin, User, Trophy, Star, Zap, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
+
+// API Base URL
+const API_BASE_URL = "http://localhost:5000/api";
+
+interface UserStats {
+  points: number;
+  lessonsCompleted: number;
+  totalTimeSpent: number;
+}
 
 interface PageProfilProps {
   onBack?: () => void;
@@ -25,8 +35,9 @@ interface PageProfilProps {
 }
 
 export function PageProfil({ onBack, user, onUpdateUser }: PageProfilProps) {
-  const [isEditing, setIsEditing] = React.useState(false);
-  const [form, setForm] = React.useState({
+  const [isEditing, setIsEditing] = useState(false);
+  const [stats, setStats] = useState<UserStats | null>(null);
+  const [form, setForm] = useState({
     name: user?.name ?? "Rian Ansari",
     email: user?.email ?? "rian@email.com",
     avatar: user?.avatar ?? "",
@@ -36,7 +47,41 @@ export function PageProfil({ onBack, user, onUpdateUser }: PageProfilProps) {
       "Saya adalah mahasiswa yang tertarik pada pengembangan web, kecerdasan buatan, dan data analysis. Terbiasa menggunakan React, TypeScript, Tailwind CSS, serta Python untuk kebutuhan analisis dan machine learning.",
   });
 
-  React.useEffect(() => {
+  // Fetch user stats from API
+  useEffect(() => {
+    fetchUserStats();
+  }, []);
+
+  const fetchUserStats = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/me`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+
+      if (data.status === 200 && data.payload?.Stats) {
+        setStats(data.payload.Stats);
+        console.log('[PageProfil] User stats:', data.payload.Stats);
+      }
+    } catch (error) {
+      console.error('[PageProfil] Error fetching stats:', error);
+    }
+  };
+
+  // Level calculation
+  const XP_PER_LEVEL = 500;
+  const totalXp = stats?.points ?? 0;
+  const currentLevel = Math.floor(totalXp / XP_PER_LEVEL) + 1;
+  const currentLevelXp = totalXp % XP_PER_LEVEL;
+  const progressPercent = (currentLevelXp / XP_PER_LEVEL) * 100;
+  const xpNeeded = XP_PER_LEVEL - currentLevelXp;
+
+  useEffect(() => {
     setForm((f) => ({
       ...f,
       name: user?.name ?? f.name,
@@ -134,8 +179,61 @@ export function PageProfil({ onBack, user, onUpdateUser }: PageProfilProps) {
                   </h2>
                   <p className="text-slate-400">Mahasiswa & Web Developer</p>
 
+                  {/* Level Progress Card */}
+                  <div className="w-full mt-4 p-4 rounded-xl bg-gradient-to-br from-indigo-900/50 to-purple-900/50 border border-indigo-500/30">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="p-2 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 shadow-lg">
+                          <Trophy className="h-5 w-5 text-white" />
+                        </div>
+                        <div className="text-left">
+                          <p className="text-xs text-slate-400">Current Level</p>
+                          <p className="text-2xl font-bold text-white">Level {currentLevel}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-slate-400">Total XP</p>
+                        <p className="text-lg font-bold text-indigo-300">{totalXp.toLocaleString()}</p>
+                      </div>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-slate-400 flex items-center gap-1">
+                          <Zap className="h-3 w-3 text-yellow-400" />
+                          {currentLevelXp} / {XP_PER_LEVEL} XP
+                        </span>
+                        <span className="text-indigo-300 font-medium">
+                          {progressPercent.toFixed(0)}%
+                        </span>
+                      </div>
+                      <Progress
+                        value={progressPercent}
+                        className="h-3 bg-slate-700"
+                      />
+                      <p className="text-xs text-center text-slate-400 flex items-center justify-center gap-1">
+                        <TrendingUp className="h-3 w-3 text-green-400" />
+                        Butuh <span className="text-indigo-300 font-semibold">{xpNeeded}</span> XP lagi untuk Level {currentLevel + 1}
+                      </p>
+                    </div>
+
+                    {/* Stats Row */}
+                    {stats && (
+                      <div className="mt-3 pt-3 border-t border-slate-700/50 grid grid-cols-2 gap-2 text-xs">
+                        <div className="flex items-center gap-1 text-slate-400">
+                          <Star className="h-3 w-3 text-yellow-400" />
+                          <span>{stats.lessonsCompleted ?? 0} Lessons</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-slate-400 justify-end">
+                          <span>{stats.points ?? 0} Points</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   <Button
-                    className="mt-6 w-full rounded-xl"
+                    className="mt-4 w-full rounded-xl"
                     onClick={() => setIsEditing(true)}
                   >
                     Edit Profil
