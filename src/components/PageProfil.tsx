@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 
 interface PageProfilProps {
   onBack?: () => void;
+  onLogout?: () => void;
   user?: {
     name?: string;
     email?: string;
@@ -24,7 +25,12 @@ interface PageProfilProps {
   }) => void;
 }
 
-export function PageProfil({ onBack, user, onUpdateUser }: PageProfilProps) {
+export function PageProfil({
+  onBack,
+  user,
+  onUpdateUser,
+  onLogout,
+}: PageProfilProps) {
   const [isEditing, setIsEditing] = React.useState(false);
   const [form, setForm] = React.useState({
     name: user?.name ?? "Rian Ansari",
@@ -139,6 +145,13 @@ export function PageProfil({ onBack, user, onUpdateUser }: PageProfilProps) {
                     onClick={() => setIsEditing(true)}
                   >
                     Edit Profil
+                  </Button>
+                  <Button
+                    className="mt-2 w-full rounded-xl bg-red-600 hover:bg-red-700"
+                    onClick={() => onLogout?.()}
+                    variant={"secondary"}
+                  >
+                    Log Out
                   </Button>
                 </>
               ) : (

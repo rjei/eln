@@ -1,150 +1,142 @@
 import { useState, useRef, useEffect } from "react";
-import {
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
-  Maximize,
-  Settings,
-} from "lucide-react";
+import YouTube, { Options as YouTubeOptions, YouTubePlayer } from "react-youtube";
+import { Play, Pause } from "lucide-react";
 import { Button } from "./ui/button";
-import { Slider } from "./ui/slider";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
 
 interface VideoPlayerProps {
   videoUrl: string;
   onTimeUpdate?: (currentTime: number) => void;
   onPlay?: () => void;
   onPause?: () => void;
+  onPlayerReady?: (player: YouTubePlayer) => void;
 }
 
-export function VideoPlayer({
-  videoUrl,
-  onTimeUpdate,
-  onPlay,
-  onPause,
-}: VideoPlayerProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+export function VideoPlayer({ videoUrl, onTimeUpdate, onPlay, onPause, onPlayerReady }: VideoPlayerProps) {
+  // create local alias so code always references a declared binding
+  const onPlayerReadyCallback = onPlayerReady;
+  const playerRef = useRef<YouTubePlayer | null>(null);
+  const intervalRef = useRef<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(1);
-  const [isMuted, setIsMuted] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
-  const [showControls, setShowControls] = useState(true);
 
-  // Convert YouTube URL to embed format
-  const getEmbedUrl = (url: string) => {
-    if (!url) return url;
-
-    // Already embed format
-    if (url.includes("/embed/")) return url;
-
-    // Standard YouTube watch URL
-    const watchMatch = url.match(
-      /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/
-    );
-    if (watchMatch) {
-      return `https://www.youtube.com/embed/${watchMatch[1]}`;
-    }
-
-    return url;
+  const parseVideoId = (urlOrId: string) => {
+    if (!urlOrId) return "";
+    if (!urlOrId.includes("/")) return urlOrId;
+    const m = urlOrId.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{4,})/);
+    return m ? m[1] : urlOrId;
   };
 
-  const embedUrl = getEmbedUrl(videoUrl);
+  const videoId = parseVideoId(videoUrl);
 
-  // Detect if URL is YouTube/embed
-  const isYouTubeOrEmbed =
-    embedUrl.includes("youtube.com") ||
-    embedUrl.includes("youtu.be") ||
-    embedUrl.includes("embed");
+  const opts: YouTubeOptions = {
+    height: "390",
+    width: "640",
+    playerVars: {
+      autoplay: 0,
+      controls: 1,
+      modestbranding: 1,
+    },
+  };
+
+  const onReady = (event: any) => {
+    playerRef.current = event.target as YouTubePlayer;
+    onPlayerReadyCallback?.(playerRef.current);
+    // diagnostic
+    // eslint-disable-next-line no-console
+    console.debug('YouTube ready, playerRef set');
+    // Start polling immediately so parent receives currentTime updates
+    // even if user doesn't click the Play button (keeps LiveSegmentBox in sync).
+    startPolling();
+    if (playerRef.current && typeof playerRef.current.getCurrentTime === "function") {
+      const t = playerRef.current.getCurrentTime();
+      setCurrentTime(t);
+      onTimeUpdate?.(t);
+    }
+    // ensure audio is unmuted and volume set
+    try {
+      if (playerRef.current && typeof playerRef.current.unMute === "function") {
+        playerRef.current.unMute();
+      }
+      if (playerRef.current && typeof playerRef.current.setVolume === "function") {
+        playerRef.current.setVolume(100);
+      }
+    } catch (e) {
+      // ignore
+    }
+  };
+
+  const onStateChange = (event: any) => {
+    // YouTube PlayerState: 1 = playing, 2 = paused
+    const state = event.data;
+    // eslint-disable-next-line no-console
+    console.debug('YouTube state change', state);
+    if (state === 1) {
+      try {
+        playerRef.current?.unMute?.();
+        playerRef.current?.setVolume?.(100);
+      } catch (e) {}
+    }
+    if (state === 2) {
+      // paused
+    }
+  };
+
+  const onError = (event: any) => {
+    // eslint-disable-next-line no-console
+    console.error('YouTube player error', event);
+  };
+
+  const startPolling = () => {
+    stopPolling();
+    intervalRef.current = window.setInterval(() => {
+      if (playerRef.current && typeof playerRef.current.getCurrentTime === "function") {
+        const t = playerRef.current.getCurrentTime();
+        setCurrentTime(t);
+        onTimeUpdate?.(t);
+      }
+    }, 500) as unknown as number;
+  };
+
+  const stopPolling = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
+    return () => stopPolling();
+  }, []);
 
-    const handleTimeUpdate = () => {
-      setCurrentTime(video.currentTime);
-      onTimeUpdate?.(video.currentTime);
-    };
-
-    const handleLoadedMetadata = () => {
-      setDuration(video.duration);
-    };
-
-    video.addEventListener("timeupdate", handleTimeUpdate);
-    video.addEventListener("loadedmetadata", handleLoadedMetadata);
-
-    return () => {
-      video.removeEventListener("timeupdate", handleTimeUpdate);
-      video.removeEventListener("loadedmetadata", handleLoadedMetadata);
-    };
-  }, [onTimeUpdate]);
-
-  const togglePlay = () => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    if (isPlaying) {
-      video.pause();
-      onPause?.();
-    } else {
-      video.play();
-      onPlay?.();
-    }
-    setIsPlaying(!isPlaying);
+  const handlePlay = () => {
+    // ensure audio enabled before playing
+    try {
+      playerRef.current?.unMute?.();
+      playerRef.current?.setVolume?.(100);
+    } catch (e) {}
+    playerRef.current?.playVideo();
+    setIsPlaying(true);
+    onPlay?.();
+    startPolling();
   };
 
-  const handleSeek = (value: number[]) => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.currentTime = value[0];
-    setCurrentTime(value[0]);
+  const handlePause = () => {
+    playerRef.current?.pauseVideo();
+    setIsPlaying(false);
+    onPause?.();
+    stopPolling();
   };
 
-  const handleVolumeChange = (value: number[]) => {
-    const video = videoRef.current;
-    if (!video) return;
-    const newVolume = value[0];
-    video.volume = newVolume;
-    setVolume(newVolume);
-    setIsMuted(newVolume === 0);
+  const seekTo = (seconds: number) => {
+    playerRef.current?.seekTo(seconds, true);
+    setCurrentTime(seconds);
+    onTimeUpdate?.(seconds);
   };
 
-  const toggleMute = () => {
-    const video = videoRef.current;
-    if (!video) return;
-    if (isMuted) {
-      video.volume = volume || 0.5;
-      setIsMuted(false);
-    } else {
-      video.volume = 0;
-      setIsMuted(true);
-    }
-  };
-
-  const changePlaybackRate = (rate: number) => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.playbackRate = rate;
-    setPlaybackRate(rate);
-  };
-
-  const toggleFullscreen = () => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    if (!document.fullscreenElement) {
-      container.requestFullscreen();
-    } else {
-      document.exitFullscreen();
-    }
+  const changeRate = (r: number) => {
+    playerRef.current?.setPlaybackRate(r);
+    setPlaybackRate(r);
   };
 
   const formatTime = (time: number) => {
@@ -154,135 +146,39 @@ export function VideoPlayer({
   };
 
   return (
-    <div
-      ref={containerRef}
-      className="relative bg-black w-full rounded-lg overflow-hidden group"
-      style={{ aspectRatio: "16 / 9" }}
-      onMouseEnter={() => setShowControls(true)}
-      onMouseLeave={() => setShowControls(isPlaying ? false : true)}
-    >
-      {isYouTubeOrEmbed ? (
-        // YouTube/Embed iframe
-        <iframe
-          src={embedUrl}
-          className="w-full h-full border-0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-      ) : (
-        // Direct video file
-        <video
-          ref={videoRef}
-          src={embedUrl}
-          className="w-full h-full border-0"
-          onClick={togglePlay}
-        />
-      )}
+    <div className="w-full">
+      <div className="mx-auto max-w-4xl">
+        <div className="aspect-video bg-black rounded-lg overflow-hidden">
+          {videoId ? (
+            <YouTube videoId={videoId} opts={opts} onReady={onReady} onStateChange={onStateChange} onError={onError} />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-white">No video</div>
+          )}
+        </div>
 
-      {/* Controls Overlay - Only show for direct video */}
-      {!isYouTubeOrEmbed && (
-        <div
-          className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-4 transition-opacity duration-300 ${
-            showControls ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          {/* Progress Bar */}
-          <div className="mb-3">
-            <Slider
-              value={[currentTime]}
-              min={0}
-              max={duration || 100}
-              step={0.1}
-              onValueChange={handleSeek}
-              className="cursor-pointer"
-            />
-          </div>
+        <div className="flex items-center gap-3 mt-3">
+          <Button onClick={() => (isPlaying ? handlePause() : handlePlay())}>
+            {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />} {isPlaying ? "Pause" : "Play"}
+          </Button>
 
-          <div className="flex items-center justify-between gap-4">
-            {/* Left Controls */}
-            <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={togglePlay}
-                className="text-white hover:bg-white/20 hover:text-white"
+          <div className="text-sm text-gray-700">{formatTime(currentTime)}</div>
+
+          <div className="ml-auto flex items-center gap-2">
+            <label className="text-sm text-gray-600">Speed:</label>
+            {[0.5, 0.75, 1, 1.25, 1.5, 2].map((r) => (
+              <button
+                key={r}
+                onClick={() => changeRate(r)}
+                className={`px-2 py-1 rounded ${playbackRate === r ? "bg-primary text-white" : "bg-white/80"}`}
               >
-                {isPlaying ? (
-                  <Pause className="h-5 w-5" />
-                ) : (
-                  <Play className="h-5 w-5" />
-                )}
-              </Button>
-
-              <div className="flex items-center gap-2 group/volume">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={toggleMute}
-                  className="text-white hover:bg-white/20 hover:text-white"
-                >
-                  {isMuted ? (
-                    <VolumeX className="h-5 w-5" />
-                  ) : (
-                    <Volume2 className="h-5 w-5" />
-                  )}
-                </Button>
-                <div className="w-0 group-hover/volume:w-24 transition-all duration-300 overflow-hidden">
-                  <Slider
-                    value={[isMuted ? 0 : volume]}
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    onValueChange={handleVolumeChange}
-                  />
-                </div>
-              </div>
-
-              <span className="text-white text-sm font-medium">
-                {formatTime(currentTime)} / {formatTime(duration)}
-              </span>
-            </div>
-
-            {/* Right Controls */}
-            <div className="flex items-center gap-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-white hover:bg-white/20 hover:text-white"
-                  >
-                    <Settings className="h-5 w-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <div className="px-2 py-1 text-sm font-semibold">
-                    Playback Speed
-                  </div>
-                  {[0.5, 0.75, 1, 1.25, 1.5, 2].map((rate) => (
-                    <DropdownMenuItem
-                      key={rate}
-                      onClick={() => changePlaybackRate(rate)}
-                      className={playbackRate === rate ? "bg-primary/10" : ""}
-                    >
-                      {rate}x {playbackRate === rate && "✓"}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleFullscreen}
-                className="text-white hover:bg-white/20 hover:text-white"
-              >
-                <Maximize className="h-5 w-5" />
-              </Button>
-            </div>
+                {r}x
+              </button>
+            ))}
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
+
+export default VideoPlayer;

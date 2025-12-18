@@ -1,4 +1,10 @@
-import { ArrowLeft, CheckCircle2, BookOpen, ChevronRight, Sparkles } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  BookOpen,
+  ChevronRight,
+  Sparkles,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Progress } from "./ui/progress";
@@ -88,7 +94,7 @@ Mari kita mulai perjalanan belajar bahasa Inggris Anda!`,
     2: {
       title: "Basic Greetings & Introductions",
       duration: "12 menit",
-      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+      videoUrl: "",
       transcript: [
         {
           id: 1,
@@ -166,7 +172,7 @@ Coba perkenalkan diri Anda dalam bahasa Inggris menggunakan format di atas. Ulan
     3: {
       title: "Practice: Self Introduction",
       duration: "10 menit",
-      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+      videoUrl: "",
       transcript: [
         {
           id: 1,
@@ -282,12 +288,25 @@ Cara belajar cepat:
         vocabulary: [
           { word: "One", meaning: "Satu", example: "One apple" },
           { word: "Twenty", meaning: "Dua puluh", example: "Twenty minutes" },
-          { word: "Thirty-five", meaning: "Tiga puluh lima", example: "I am thirty-five years old" },
-          { word: "Hundred", meaning: "Seratus", example: "One hundred students" },
+          {
+            word: "Thirty-five",
+            meaning: "Tiga puluh lima",
+            example: "I am thirty-five years old",
+          },
+          {
+            word: "Hundred",
+            meaning: "Seratus",
+            example: "One hundred students",
+          },
         ],
         quiz: {
           question: "Bagaimana cara mengucapkan angka 47 dalam bahasa Inggris?",
-          options: ["Four ten seven", "Forty seven", "Fourty seven", "Seven forty"],
+          options: [
+            "Four ten seven",
+            "Forty seven",
+            "Fourty seven",
+            "Seven forty",
+          ],
           correctAnswer: 1,
         },
       },
@@ -312,12 +331,26 @@ Latihan:
         vocabulary: [
           { word: "Red", meaning: "Merah", example: "The apple is red" },
           { word: "Circle", meaning: "Lingkaran", example: "Draw a circle" },
-          { word: "Square", meaning: "Persegi", example: "The window is a square" },
-          { word: "Purple", meaning: "Ungu", example: "She likes purple flowers" },
+          {
+            word: "Square",
+            meaning: "Persegi",
+            example: "The window is a square",
+          },
+          {
+            word: "Purple",
+            meaning: "Ungu",
+            example: "She likes purple flowers",
+          },
         ],
         quiz: {
-          question: "Bagaimana cara mengatakan 'lingkaran hijau' dalam bahasa Inggris?",
-          options: ["Green circle", "Circle green", "Green round", "Circle of green"],
+          question:
+            "Bagaimana cara mengatakan 'lingkaran hijau' dalam bahasa Inggris?",
+          options: [
+            "Green circle",
+            "Circle green",
+            "Green round",
+            "Circle of green",
+          ],
           correctAnswer: 0,
         },
       },
@@ -332,12 +365,25 @@ Jenis soal:
 • Cerita pendek: "The purple star is next to the blue circle."
 • Pilihan ganda mengenai angka dan warna yang sudah dipelajari.`,
         vocabulary: [
-          { word: "Describe", meaning: "Menjelaskan", example: "Describe the purple circle" },
-          { word: "Pattern", meaning: "Pola", example: "The pattern repeats every five numbers" },
-          { word: "Shade", meaning: "Nuanasa", example: "A darker shade of blue" },
+          {
+            word: "Describe",
+            meaning: "Menjelaskan",
+            example: "Describe the purple circle",
+          },
+          {
+            word: "Pattern",
+            meaning: "Pola",
+            example: "The pattern repeats every five numbers",
+          },
+          {
+            word: "Shade",
+            meaning: "Nuanasa",
+            example: "A darker shade of blue",
+          },
         ],
         quiz: {
-          question: "Apa jawaban yang benar untuk angka 63 dalam bahasa Inggris?",
+          question:
+            "Apa jawaban yang benar untuk angka 63 dalam bahasa Inggris?",
           options: ["Sixty-three", "Six-three", "Three sixty", "Sixty free"],
           correctAnswer: 0,
         },
@@ -360,10 +406,26 @@ Kunci:
 2. Future Perfect sering dipakai dengan "by tomorrow", "by next week".
 3. Latihan: buat dua kalimat untuk setiap tense menggunakan action yang berbeda.`,
         vocabulary: [
-          { word: "Already", meaning: "Sudah", example: "She had already left when we arrived." },
-          { word: "By then", meaning: "Saat itu", example: "By then, he will have finished the project." },
-          { word: "Had", meaning: "Telah", example: "I had visited Paris before I turned 20." },
-          { word: "Will have", meaning: "Akan sudah", example: "By midnight, we will have completed the assignment." },
+          {
+            word: "Already",
+            meaning: "Sudah",
+            example: "She had already left when we arrived.",
+          },
+          {
+            word: "By then",
+            meaning: "Saat itu",
+            example: "By then, he will have finished the project.",
+          },
+          {
+            word: "Had",
+            meaning: "Telah",
+            example: "I had visited Paris before I turned 20.",
+          },
+          {
+            word: "Will have",
+            meaning: "Akan sudah",
+            example: "By midnight, we will have completed the assignment.",
+          },
         ],
         quiz: {
           question: "Mana kalimat Future Perfect yang benar?",
@@ -390,10 +452,26 @@ Tips:
 2. Type 2 dipakai untuk situasi imajinasi sekarang.
 3. Type 3 mendeskripsikan penyesalan atau kejadian lampau yang berbeda.`,
         vocabulary: [
-          { word: "If", meaning: "Jika", example: "If it rains, we will stay home." },
-          { word: "Would", meaning: "Akan", example: "If I had money, I would travel." },
-          { word: "Had", meaning: "Telah", example: "If he had studied, he would have passed." },
-          { word: "Will", meaning: "Akan", example: "She will come if she is invited." },
+          {
+            word: "If",
+            meaning: "Jika",
+            example: "If it rains, we will stay home.",
+          },
+          {
+            word: "Would",
+            meaning: "Akan",
+            example: "If I had money, I would travel.",
+          },
+          {
+            word: "Had",
+            meaning: "Telah",
+            example: "If he had studied, he would have passed.",
+          },
+          {
+            word: "Will",
+            meaning: "Akan",
+            example: "She will come if she is invited.",
+          },
         ],
         quiz: {
           question: "Pilih kalimat Conditional Type 2 yang benar:",
@@ -422,10 +500,26 @@ Latihan:
 2. Gunakan "by" untuk menyebut pelaku jika perlu.
 3. Perhatikan perubahan tense pada kata "be".`,
         vocabulary: [
-          { word: "is/are", meaning: "adalah", example: "The letter is sent every morning." },
-          { word: "was/were", meaning: "telah", example: "The cake was eaten." },
-          { word: "being", meaning: "sedang", example: "The car is being washed." },
-          { word: "By", meaning: "oleh", example: "The novel was written by Maya." },
+          {
+            word: "is/are",
+            meaning: "adalah",
+            example: "The letter is sent every morning.",
+          },
+          {
+            word: "was/were",
+            meaning: "telah",
+            example: "The cake was eaten.",
+          },
+          {
+            word: "being",
+            meaning: "sedang",
+            example: "The car is being washed.",
+          },
+          {
+            word: "By",
+            meaning: "oleh",
+            example: "The novel was written by Maya.",
+          },
         ],
         quiz: {
           question: "Pilih kalimat passive yang benar:",
@@ -455,13 +549,30 @@ Praktik:
 2. Perhatikan perubahan kata keterangan waktu dan pronoun.
 3. Tambahkan "to" setelah "told" jika ada object.`,
         vocabulary: [
-          { word: "Said", meaning: "Mengatakan", example: "He said that he was ready." },
-          { word: "Told", meaning: "Beritahu", example: "She told me to wait." },
-          { word: "That", meaning: "Bahwa", example: "He said that he liked it." },
-          { word: "Would", meaning: "Akan", example: "She said she would help." },
+          {
+            word: "Said",
+            meaning: "Mengatakan",
+            example: "He said that he was ready.",
+          },
+          {
+            word: "Told",
+            meaning: "Beritahu",
+            example: "She told me to wait.",
+          },
+          {
+            word: "That",
+            meaning: "Bahwa",
+            example: "He said that he liked it.",
+          },
+          {
+            word: "Would",
+            meaning: "Akan",
+            example: "She said she would help.",
+          },
         ],
         quiz: {
-          question: "Ubah kalimat berikut ke reported speech: She said, 'I can help you.'",
+          question:
+            "Ubah kalimat berikut ke reported speech: She said, 'I can help you.'",
           options: [
             "She said she could help me.",
             "She said she can help me.",
@@ -476,7 +587,7 @@ Praktik:
     4: {
       title: "Present Perfect Tense",
       duration: "18 menit",
-      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+      videoUrl: "",
       transcript: [
         {
           id: 1,
@@ -597,7 +708,7 @@ Perbedaan dengan Simple Past:
     5: {
       title: "Business & Professional Vocabulary",
       duration: "16 menit",
-      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+      videoUrl: "",
       transcript: [
         {
           id: 1,
@@ -712,7 +823,7 @@ Contoh Situasi:
     6: {
       title: "Small Talk & Social Situations",
       duration: "16 menit",
-      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+      videoUrl: "",
       transcript: [
         {
           id: 1,
@@ -945,13 +1056,9 @@ Project Manager`,
           },
         ],
         quiz: {
-          question: "What is the most professional way to start a business email?",
-          options: [
-            "Hey, what's up?",
-            "Dear Mr. Smith,",
-            "Yo!",
-            "Hi there!",
-          ],
+          question:
+            "What is the most professional way to start a business email?",
+          options: ["Hey, what's up?", "Dear Mr. Smith,", "Yo!", "Hi there!"],
           correctAnswer: 1,
         },
       },
@@ -1105,13 +1212,9 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
           },
         ],
         quiz: {
-          question: "How much time should you spend on each TOEFL reading passage?",
-          options: [
-            "10 minutes",
-            "20 minutes",
-            "30 minutes",
-            "40 minutes",
-          ],
+          question:
+            "How much time should you spend on each TOEFL reading passage?",
+          options: ["10 minutes", "20 minutes", "30 minutes", "40 minutes"],
           correctAnswer: 1,
         },
       },
@@ -1119,7 +1222,7 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
   };
 
   const lesson = lessonData[lessonId as keyof typeof lessonData];
-  
+
   // Guard clause for lessons without content
   if (!lesson) {
     return (
@@ -1128,7 +1231,8 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
           <div className="text-6xl mb-4">📚</div>
           <h2 className="text-2xl font-bold mb-2">Lesson Belum Tersedia</h2>
           <p className="text-gray-600 mb-6">
-            Konten untuk lesson ini sedang dalam pengembangan. Silakan coba lesson lain atau kembali nanti.
+            Konten untuk lesson ini sedang dalam pengembangan. Silakan coba
+            lesson lain atau kembali nanti.
           </p>
           <Button onClick={onBack} className="gap-2">
             <ArrowLeft className="h-4 w-4" />
@@ -1138,7 +1242,7 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
       </div>
     );
   }
-  
+
   const steps = ["Materi", "Vocabulary", "Quiz"];
   const progressPercent = ((currentStep + 1) / steps.length) * 100;
 
@@ -1228,7 +1332,9 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
                       </p>
                       <div
                         className="flex items-center gap-2 text-4xl font-extrabold leading-tight text-slate-900"
-                        style={{ fontFamily: '"Space Grotesk", "Inter", sans-serif' }}
+                        style={{
+                          fontFamily: '"Space Grotesk", "Inter", sans-serif',
+                        }}
                       >
                         <Sparkles className="text-orange-200" size={32} />
                         <span>Welcome to English Learning</span>
@@ -1253,7 +1359,9 @@ Remember: Practice makes perfect! Take multiple practice tests to improve your s
                       <p className="text-xs uppercase tracking-widest text-slate-500">
                         {label}
                       </p>
-                      <p className="text-lg font-bold text-slate-900">{value}</p>
+                      <p className="text-lg font-bold text-slate-900">
+                        {value}
+                      </p>
                     </div>
                   ))}
                 </div>

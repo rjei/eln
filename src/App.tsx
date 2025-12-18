@@ -16,6 +16,7 @@ import { RegisterPage } from "./components/RegisterPage";
 import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner";
 import ClickSpark from "./components/ui/click-spark";
+import { logout } from "./services/api";
 import { PageProfil } from "./components/PageProfil";
 
 type Page =
@@ -141,6 +142,11 @@ export default function App() {
           <PageProfil
             user={user}
             onUpdateUser={(u) => setUser((prev) => ({ ...(prev ?? {}), ...u }))}
+            onLogout={() => {
+              logout();
+              setUser(null);
+              setCurrentPage("login");
+            }}
           />
         )}
 

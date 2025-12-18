@@ -55,7 +55,16 @@
       outDir: 'build',
     },
     server: {
-      port: 3000,
-      open: true,
+        port: 3000,
+        open: true,
+        proxy: {
+          // proxy /translate to libretranslate to avoid CORS/preflight redirect in dev
+          '/translate': {
+            target: 'https://libretranslate.de',
+            changeOrigin: true,
+            secure: true,
+            rewrite: (path) => path.replace(/^\/translate/, '/translate'),
+          },
+        },
     },
   });
