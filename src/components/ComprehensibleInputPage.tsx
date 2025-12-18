@@ -3,13 +3,24 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "./ui/button";
 import VideoPlayer from "./VideoPlayer";
 import CanvasTimeline from "./CanvasTimeline";
-import { InteractiveTranscript, TranscriptSegment } from "./InteractiveTranscript";
+import {
+  InteractiveTranscript,
+  TranscriptSegment,
+} from "./InteractiveTranscript";
 
-function LiveSegmentBox({ segments, currentTime }: { segments: TranscriptSegment[]; currentTime: number }) {
+function LiveSegmentBox({
+  segments,
+  currentTime,
+}: {
+  segments: TranscriptSegment[];
+  currentTime: number;
+}) {
   const active = useMemo(() => {
     if (!segments || segments.length === 0) return null;
     // exact current segment
-    const exact = segments.find((s) => currentTime >= s.startTime && currentTime <= s.endTime);
+    const exact = segments.find(
+      (s) => currentTime >= s.startTime && currentTime <= s.endTime
+    );
     if (exact) return exact;
     // fallback to last segment that started before currentTime
     for (let i = segments.length - 1; i >= 0; i--) {
@@ -22,10 +33,16 @@ function LiveSegmentBox({ segments, currentTime }: { segments: TranscriptSegment
     <div className="w-full">
       <div className="bg-white/90 border border-purple-200 rounded-md p-3 max-h-40 overflow-y-auto">
         <div className="text-xs text-gray-600 mb-1">Sedang diputar</div>
-        <div className="text-sm font-semibold text-black mb-1">{active?.speaker || "-"}</div>
-        <div className="text-sm text-black leading-relaxed">{active?.text || "(Tidak ada transkrip)"}</div>
+        <div className="text-sm font-semibold text-black mb-1">
+          {active?.speaker || "-"}
+        </div>
+        <div className="text-sm text-black leading-relaxed">
+          {active?.text || "(Tidak ada transkrip)"}
+        </div>
         {active?.translation && (
-          <div className="text-xs italic text-gray-600 mt-2">{active.translation}</div>
+          <div className="text-xs italic text-gray-600 mt-2">
+            {active.translation}
+          </div>
         )}
       </div>
     </div>
@@ -36,12 +53,14 @@ interface ComprehensibleInputPageProps {
   onBack: () => void;
 }
 
-export function ComprehensibleInputPage({ onBack }: ComprehensibleInputPageProps) {
+export function ComprehensibleInputPage({
+  onBack,
+}: ComprehensibleInputPageProps) {
   const defaultVideo = "_Se8m3SnAi4"; // YouTube id provided
   const [videoId, setVideoId] = useState<string>(defaultVideo);
   const [segments, setSegments] = useState<TranscriptSegment[]>([]);
   const [editorText, setEditorText] = useState<string>(
-`0-9|Anchor|Well, we're getting our first look at the Pentagon watchdog report on the|Baiklah, kita mendapatkan gambaran pertama kita tentang laporan pengawas Pentagon mengenai
+    `0-9|Anchor|Well, we're getting our first look at the Pentagon watchdog report on the|Baiklah, kita mendapatkan gambaran pertama kita tentang laporan pengawas Pentagon mengenai
 9-14|Anchor|so-called signal gate scandal. The news breaking right now. Sources telling us|skandal yang disebut signal gate. Berita ini baru saja terungkap. Sumber memberitahu kami
 14-19|Anchor|the Pentagon's inspector general found that Secretary Pete Hgsth risked|inspektur jenderal Pentagon menemukan bahwa Menteri Pete Hgsth berisiko
 19-24|Anchor|exposing classified information that could have endangered US troops when he|membocorkan informasi rahasia yang dapat membahayakan pasukan AS ketika dia
@@ -81,7 +100,7 @@ export function ComprehensibleInputPage({ onBack }: ComprehensibleInputPageProps
         const parsed = parseEditor(editorText);
         setSegments(parsed);
       } catch (err) {
-        console.error('Gagal parsing default editorText', err);
+        console.error("Gagal parsing default editorText", err);
       }
     }
   }, [videoId]);
@@ -100,14 +119,19 @@ export function ComprehensibleInputPage({ onBack }: ComprehensibleInputPageProps
   };
 
   const parseEditor = (text: string) => {
-    const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
+    const lines = text
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
     const parsed: TranscriptSegment[] = lines.map((line, idx) => {
       const parts = line.split("|");
       const times = (parts[0] || "0-5").split("-");
       return {
         id: idx + 1,
         startTime: parseTimestamp(times[0]),
-        endTime: parseTimestamp(times[1] || (parseTimestamp(times[0]) + 5).toString()),
+        endTime: parseTimestamp(
+          times[1] || (parseTimestamp(times[0]) + 5).toString()
+        ),
         speaker: parts[1]?.trim() || undefined,
         text: parts[2]?.trim() || "",
         translation: parts[3]?.trim() || undefined,
@@ -115,7 +139,6 @@ export function ComprehensibleInputPage({ onBack }: ComprehensibleInputPageProps
     });
     return parsed;
   };
-
 
   const handleSave = () => {
     const parsed = parseEditor(editorText);
@@ -126,7 +149,10 @@ export function ComprehensibleInputPage({ onBack }: ComprehensibleInputPageProps
   const handlePlayerReady = (player: any) => {
     playerRef.current = player;
     try {
-      const d = player?.getDuration && typeof player.getDuration === "function" ? player.getDuration() : 0;
+      const d =
+        player?.getDuration && typeof player.getDuration === "function"
+          ? player.getDuration()
+          : 0;
       setVideoDuration(d || 0);
     } catch (e) {
       setVideoDuration(0);
@@ -141,14 +167,21 @@ export function ComprehensibleInputPage({ onBack }: ComprehensibleInputPageProps
     // skip possible WEBVTT header
     if (lines[0] && lines[0].trim().toUpperCase().startsWith("WEBVTT")) i = 1;
 
-    const timeRegex = /(\d{1,2}:)?\d{1,2}:\d{2}(?:\.\d+)?\s-->\s(\d{1,2}:)?\d{1,2}:\d{2}(?:\.\d+)?/;
+    const timeRegex =
+      /(\d{1,2}:)?\d{1,2}:\d{2}(?:\.\d+)?\s-->\s(\d{1,2}:)?\d{1,2}:\d{2}(?:\.\d+)?/;
 
     while (i < lines.length) {
       const line = lines[i].trim();
-      if (!line) { i++; continue; }
+      if (!line) {
+        i++;
+        continue;
+      }
 
       // if line is an index number, skip it
-      if (/^\d+$/.test(line)) { i++; continue; }
+      if (/^\d+$/.test(line)) {
+        i++;
+        continue;
+      }
 
       // check for timecode
       if (timeRegex.test(line)) {
@@ -199,16 +232,16 @@ export function ComprehensibleInputPage({ onBack }: ComprehensibleInputPageProps
   const parseTimestampToSeconds = (t: string) => {
     const clean = t.trim();
     // formats: HH:MM:SS.mmm or MM:SS.mmm
-    const parts = clean.split(":" ).map(p => p.trim());
+    const parts = clean.split(":").map((p) => p.trim());
     if (parts.length === 3) {
       const h = parseInt(parts[0], 10) || 0;
       const m = parseInt(parts[1], 10) || 0;
-      const s = parseFloat(parts[2].replace(',', '.')) || 0;
+      const s = parseFloat(parts[2].replace(",", ".")) || 0;
       return h * 3600 + m * 60 + s;
     }
     if (parts.length === 2) {
       const m = parseInt(parts[0], 10) || 0;
-      const s = parseFloat(parts[1].replace(',', '.')) || 0;
+      const s = parseFloat(parts[1].replace(",", ".")) || 0;
       return m * 60 + s;
     }
     return parseFloat(clean) || 0;
@@ -218,17 +251,25 @@ export function ComprehensibleInputPage({ onBack }: ComprehensibleInputPageProps
     try {
       const segs = parseVttOrSrt(importText || "");
       if (segs.length === 0) {
-        alert('Tidak menemukan cues di teks yang dipaste. Pastikan Anda menempelkan VTT atau SRT lengkap.');
+        alert(
+          "Tidak menemukan cues di teks yang dipaste. Pastikan Anda menempelkan VTT atau SRT lengkap."
+        );
         return;
       }
       setSegments(segs);
-      try { localStorage.setItem(storageKey, JSON.stringify(segs)); } catch(e){/*noop*/}
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(segs));
+      } catch (e) {
+        /*noop*/
+      }
       setImportOpen(false);
       setImportText("");
-      alert('Import sukses. Silakan klik Play atau gunakan Generate timings jika perlu penyesuaian.');
+      alert(
+        "Import sukses. Silakan klik Play atau gunakan Generate timings jika perlu penyesuaian."
+      );
     } catch (e) {
       console.error(e);
-      alert('Gagal mengimpor: ' + e);
+      alert("Gagal mengimpor: " + e);
     }
   };
 
@@ -237,7 +278,9 @@ export function ComprehensibleInputPage({ onBack }: ComprehensibleInputPageProps
     // parse current editor text to get segment texts
     const parsed = parseEditor(editorText);
     // Count words only in the spoken text (not translation) to keep timing aligned with speech.
-    const wordCounts = parsed.map((s) => (s.text || "").split(/\s+/).filter(Boolean).length || 1);
+    const wordCounts = parsed.map(
+      (s) => (s.text || "").split(/\s+/).filter(Boolean).length || 1
+    );
     const totalWords = wordCounts.reduce((a, b) => a + b, 0);
 
     // Use floating durations to distribute time accurately, then round for stored seconds.
@@ -246,7 +289,9 @@ export function ComprehensibleInputPage({ onBack }: ComprehensibleInputPageProps
       const proportion = wordCounts[i] / totalWords;
       const segLenFloat = proportion * videoDuration;
       const start = Math.round(cursorFloat);
-      const end = Math.round(Math.min(videoDuration, cursorFloat + segLenFloat));
+      const end = Math.round(
+        Math.min(videoDuration, cursorFloat + segLenFloat)
+      );
       cursorFloat += segLenFloat;
       return { ...s, startTime: start, endTime: end } as TranscriptSegment;
     });
@@ -269,11 +314,14 @@ export function ComprehensibleInputPage({ onBack }: ComprehensibleInputPageProps
     try {
       localStorage.setItem(storageKey, JSON.stringify(newSegs));
     } catch (e) {
-      console.error('Failed saving regenerated timings', e);
+      console.error("Failed saving regenerated timings", e);
     }
     // Log generated timings for debugging/inspection
     // eslint-disable-next-line no-console
-    console.info('Regenerated timings:', newSegs.map(s => ({id: s.id, start: s.startTime, end: s.endTime}))); 
+    console.info(
+      "Regenerated timings:",
+      newSegs.map((s) => ({ id: s.id, start: s.startTime, end: s.endTime }))
+    );
   };
 
   const handleSegmentClick = (time: number) => {
@@ -290,43 +338,98 @@ export function ComprehensibleInputPage({ onBack }: ComprehensibleInputPageProps
             <ArrowLeft className="h-4 w-4" /> Kembali
           </Button>
           <h1 className="text-2xl font-bold">Video Learning — Single Video</h1>
-          <Button variant="ghost" onClick={() => {
-            const p = playerRef.current;
-            if (p && typeof p.getDuration === 'function') {
-              const d = p.getDuration();
-              regenerateTimings(d);
-            } else {
-              alert('Player belum siap — tunggu pemutar siap lalu coba lagi.');
-            }
-          }} className="ml-4">
+          <Button
+            variant="ghost"
+            onClick={() => {
+              const p = playerRef.current;
+              if (p && typeof p.getDuration === "function") {
+                const d = p.getDuration();
+                regenerateTimings(d);
+              } else {
+                alert(
+                  "Player belum siap — tunggu pemutar siap lalu coba lagi."
+                );
+              }
+            }}
+            className="ml-4"
+          >
             Generate timings
           </Button>
-          <Button variant="ghost" onClick={() => setImportOpen(true)} className="ml-2">
+          <Button
+            variant="ghost"
+            onClick={() => setImportOpen(true)}
+            className="ml-2"
+          >
             Import VTT/SRT
           </Button>
-          <Button variant="ghost" onClick={() => {
-            try {
-              playerRef.current?.unMute?.();
-              playerRef.current?.setVolume?.(100);
-              // eslint-disable-next-line no-console
-              console.log('Sent unMute/setVolume to playerRef');
-              alert('Sent unMute to player (check console)');
-            } catch (e) { alert('Unmute failed: ' + e); }
-          }} className="ml-2">Unmute</Button>
-          <Button variant="ghost" onClick={() => {
-            try {
-              const p = playerRef.current;
-              if (!p) { alert('Player not ready'); return; }
-              const vol = typeof p.getVolume === 'function' ? p.getVolume() : null;
-              const muted = typeof p.isMuted === 'function' ? p.isMuted() : null;
-              const state = typeof p.getPlayerState === 'function' ? p.getPlayerState() : null;
-              // eslint-disable-next-line no-console
-              console.log('Audio status', { vol, muted, state });
-              alert(`Audio status — volume: ${vol}, muted: ${muted}, state: ${state}`);
-            } catch (e) { alert('Audio status check failed: ' + e); }
-          }} className="ml-2">Audio status</Button>
-          <Button variant="ghost" onClick={() => { console.log('segments', segments); alert('See console for segments'); }} className="ml-2">Log segments</Button>
-          <Button variant="ghost" onClick={() => { localStorage.removeItem(storageKey); setSegments(parseEditor(editorText)); alert('Cleared saved transcript'); }} className="ml-2">Clear saved transcript</Button>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              try {
+                playerRef.current?.unMute?.();
+                playerRef.current?.setVolume?.(100);
+                // eslint-disable-next-line no-console
+                console.log("Sent unMute/setVolume to playerRef");
+                alert("Sent unMute to player (check console)");
+              } catch (e) {
+                alert("Unmute failed: " + e);
+              }
+            }}
+            className="ml-2"
+          >
+            Unmute
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              try {
+                const p = playerRef.current;
+                if (!p) {
+                  alert("Player not ready");
+                  return;
+                }
+                const vol =
+                  typeof p.getVolume === "function" ? p.getVolume() : null;
+                const muted =
+                  typeof p.isMuted === "function" ? p.isMuted() : null;
+                const state =
+                  typeof p.getPlayerState === "function"
+                    ? p.getPlayerState()
+                    : null;
+                // eslint-disable-next-line no-console
+                console.log("Audio status", { vol, muted, state });
+                alert(
+                  `Audio status — volume: ${vol}, muted: ${muted}, state: ${state}`
+                );
+              } catch (e) {
+                alert("Audio status check failed: " + e);
+              }
+            }}
+            className="ml-2"
+          >
+            Audio status
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              console.log("segments", segments);
+              alert("See console for segments");
+            }}
+            className="ml-2"
+          >
+            Log segments
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              localStorage.removeItem(storageKey);
+              setSegments(parseEditor(editorText));
+              alert("Cleared saved transcript");
+            }}
+            className="ml-2"
+          >
+            Clear saved transcript
+          </Button>
         </div>
       </div>
       <div className="flex flex-row flex-1 min-h-0">
@@ -351,14 +454,13 @@ export function ComprehensibleInputPage({ onBack }: ComprehensibleInputPageProps
           </div>
 
           <div className="mt-3 w-full">
-            <LiveSegmentBox
-              segments={segments}
-              currentTime={currentTime}
-            />
+            <LiveSegmentBox segments={segments} currentTime={currentTime} />
           </div>
         </div>
         <div className="flex-1 h-full min-h-0 flex flex-col bg-transparent">
-          <h3 className="font-semibold mb-2 px-6 pt-6">Interactive Transcript</h3>
+          <h3 className="font-semibold mb-2 px-6 pt-6">
+            Interactive Transcript
+          </h3>
           <div className="flex-1 min-h-0 px-6 pb-6">
             <InteractiveTranscript
               segments={segments}
@@ -380,7 +482,15 @@ export function ComprehensibleInputPage({ onBack }: ComprehensibleInputPageProps
               placeholder="Paste full WebVTT or SRT content here..."
             />
             <div className="flex gap-2 justify-end">
-              <Button variant="ghost" onClick={() => { setImportOpen(false); setImportText(""); }}>Cancel</Button>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setImportOpen(false);
+                  setImportText("");
+                }}
+              >
+                Cancel
+              </Button>
               <Button onClick={handleImportLoad}>Load</Button>
             </div>
           </div>

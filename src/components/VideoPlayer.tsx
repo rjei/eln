@@ -1,5 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import YouTube, { Options as YouTubeOptions, YouTubePlayer } from "react-youtube";
+import YouTube, {
+  Options as YouTubeOptions,
+  YouTubePlayer,
+} from "react-youtube";
 import { Play, Pause } from "lucide-react";
 import { Button } from "./ui/button";
 
@@ -11,7 +14,13 @@ interface VideoPlayerProps {
   onPlayerReady?: (player: YouTubePlayer) => void;
 }
 
-export function VideoPlayer({ videoUrl, onTimeUpdate, onPlay, onPause, onPlayerReady }: VideoPlayerProps) {
+export function VideoPlayer({
+  videoUrl,
+  onTimeUpdate,
+  onPlay,
+  onPause,
+  onPlayerReady,
+}: VideoPlayerProps) {
   // create local alias so code always references a declared binding
   const onPlayerReadyCallback = onPlayerReady;
   const playerRef = useRef<YouTubePlayer | null>(null);
@@ -44,11 +53,14 @@ export function VideoPlayer({ videoUrl, onTimeUpdate, onPlay, onPause, onPlayerR
     onPlayerReadyCallback?.(playerRef.current);
     // diagnostic
     // eslint-disable-next-line no-console
-    console.debug('YouTube ready, playerRef set');
+    console.debug("YouTube ready, playerRef set");
     // Start polling immediately so parent receives currentTime updates
     // even if user doesn't click the Play button (keeps LiveSegmentBox in sync).
     startPolling();
-    if (playerRef.current && typeof playerRef.current.getCurrentTime === "function") {
+    if (
+      playerRef.current &&
+      typeof playerRef.current.getCurrentTime === "function"
+    ) {
       const t = playerRef.current.getCurrentTime();
       setCurrentTime(t);
       onTimeUpdate?.(t);
@@ -58,7 +70,10 @@ export function VideoPlayer({ videoUrl, onTimeUpdate, onPlay, onPause, onPlayerR
       if (playerRef.current && typeof playerRef.current.unMute === "function") {
         playerRef.current.unMute();
       }
-      if (playerRef.current && typeof playerRef.current.setVolume === "function") {
+      if (
+        playerRef.current &&
+        typeof playerRef.current.setVolume === "function"
+      ) {
         playerRef.current.setVolume(100);
       }
     } catch (e) {
@@ -70,7 +85,7 @@ export function VideoPlayer({ videoUrl, onTimeUpdate, onPlay, onPause, onPlayerR
     // YouTube PlayerState: 1 = playing, 2 = paused
     const state = event.data;
     // eslint-disable-next-line no-console
-    console.debug('YouTube state change', state);
+    console.debug("YouTube state change", state);
     if (state === 1) {
       try {
         playerRef.current?.unMute?.();
@@ -84,13 +99,16 @@ export function VideoPlayer({ videoUrl, onTimeUpdate, onPlay, onPause, onPlayerR
 
   const onError = (event: any) => {
     // eslint-disable-next-line no-console
-    console.error('YouTube player error', event);
+    console.error("YouTube player error", event);
   };
 
   const startPolling = () => {
     stopPolling();
     intervalRef.current = window.setInterval(() => {
-      if (playerRef.current && typeof playerRef.current.getCurrentTime === "function") {
+      if (
+        playerRef.current &&
+        typeof playerRef.current.getCurrentTime === "function"
+      ) {
         const t = playerRef.current.getCurrentTime();
         setCurrentTime(t);
         onTimeUpdate?.(t);
@@ -150,15 +168,28 @@ export function VideoPlayer({ videoUrl, onTimeUpdate, onPlay, onPause, onPlayerR
       <div className="mx-auto max-w-4xl">
         <div className="aspect-video bg-black rounded-lg overflow-hidden">
           {videoId ? (
-            <YouTube videoId={videoId} opts={opts} onReady={onReady} onStateChange={onStateChange} onError={onError} />
+            <YouTube
+              videoId={videoId}
+              opts={opts}
+              onReady={onReady}
+              onStateChange={onStateChange}
+              onError={onError}
+            />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-white">No video</div>
+            <div className="w-full h-full flex items-center justify-center text-white">
+              No video
+            </div>
           )}
         </div>
 
         <div className="flex items-center gap-3 mt-3">
           <Button onClick={() => (isPlaying ? handlePause() : handlePlay())}>
-            {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />} {isPlaying ? "Pause" : "Play"}
+            {isPlaying ? (
+              <Pause className="h-4 w-4" />
+            ) : (
+              <Play className="h-4 w-4" />
+            )}{" "}
+            {isPlaying ? "Pause" : "Play"}
           </Button>
 
           <div className="text-sm text-gray-700">{formatTime(currentTime)}</div>
@@ -169,7 +200,9 @@ export function VideoPlayer({ videoUrl, onTimeUpdate, onPlay, onPause, onPlayerR
               <button
                 key={r}
                 onClick={() => changeRate(r)}
-                className={`px-2 py-1 rounded ${playbackRate === r ? "bg-primary text-white" : "bg-white/80"}`}
+                className={`px-2 py-1 rounded ${
+                  playbackRate === r ? "bg-primary text-white" : "bg-white/80"
+                }`}
               >
                 {r}x
               </button>

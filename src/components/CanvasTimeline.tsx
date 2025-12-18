@@ -8,7 +8,12 @@ interface CanvasTimelineProps {
   onSeek?: (time: number) => void;
 }
 
-export default function CanvasTimeline({ segments, currentTime, duration, onSeek }: CanvasTimelineProps) {
+export default function CanvasTimeline({
+  segments,
+  currentTime,
+  duration,
+  onSeek,
+}: CanvasTimelineProps) {
   const ref = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
