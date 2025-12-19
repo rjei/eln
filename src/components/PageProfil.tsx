@@ -16,6 +16,7 @@ interface UserStats {
 
 interface PageProfilProps {
   onBack?: () => void;
+  onLogout?: () => void;
   user?: {
     name?: string;
     email?: string;
@@ -34,7 +35,7 @@ interface PageProfilProps {
   }) => void;
 }
 
-export function PageProfil({ onBack, user, onUpdateUser }: PageProfilProps) {
+export function PageProfil({ onBack, user, onUpdateUser, onLogout }: PageProfilProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [stats, setStats] = useState<UserStats | null>(null);
   const [form, setForm] = useState({
@@ -174,7 +175,7 @@ export function PageProfil({ onBack, user, onUpdateUser }: PageProfilProps) {
 
               {!isEditing ? (
                 <>
-                  <h2 className="mt-4 text-2xl font-semibold text-black">
+                  <h2 className="mt-4 text-2xl font-semibold text-white">
                     {form.name}
                   </h2>
                   <p className="text-slate-400">Mahasiswa & Web Developer</p>
@@ -237,6 +238,13 @@ export function PageProfil({ onBack, user, onUpdateUser }: PageProfilProps) {
                     onClick={() => setIsEditing(true)}
                   >
                     Edit Profil
+                  </Button>
+                  <Button
+                    className="mt-2 w-full rounded-xl bg-red-600 hover:bg-red-700"
+                    onClick={() => onLogout?.()}
+                    variant={"secondary"}
+                  >
+                    Log Out
                   </Button>
                 </>
               ) : (
@@ -310,7 +318,7 @@ export function PageProfil({ onBack, user, onUpdateUser }: PageProfilProps) {
 
             {/* INFO UTAMA */}
             <div className="md:col-span-2 space-y-6">
-              <h3 className="text-xl font-semibold text-black border-b border-slate-700 pb-2">
+              <h3 className="text-xl font-semibold text-white border-b border-slate-700 pb-2">
                 Informasi Pribadi
               </h3>
 
@@ -319,7 +327,7 @@ export function PageProfil({ onBack, user, onUpdateUser }: PageProfilProps) {
                   <Mail className="text-indigo-400" />
                   <div>
                     <p className="text-sm text-slate-400">Email</p>
-                    <p className="text-black">{form.email}</p>
+                    <p className="text-white">{form.email}</p>
                   </div>
                 </div>
 
@@ -327,7 +335,7 @@ export function PageProfil({ onBack, user, onUpdateUser }: PageProfilProps) {
                   <Phone className="text-indigo-400" />
                   <div>
                     <p className="text-sm text-slate-400">Telepon</p>
-                    <p className="text-black">{form.phone}</p>
+                    <p className="text-white">{form.phone}</p>
                   </div>
                 </div>
 
@@ -335,14 +343,14 @@ export function PageProfil({ onBack, user, onUpdateUser }: PageProfilProps) {
                   <MapPin className="text-indigo-400" />
                   <div>
                     <p className="text-sm text-slate-400">Alamat</p>
-                    <p className="text-black">{form.address}</p>
+                    <p className="text-white">{form.address}</p>
                   </div>
                 </div>
               </div>
 
               {/* ABOUT */}
               <div>
-                <h3 className="text-xl font-semibold text-black border-b border-slate-700 pb-2">
+                <h3 className="text-xl font-semibold text-white border-b border-slate-700 pb-2">
                   Tentang Saya
                 </h3>
                 <p className="mt-3 text-slate-300 leading-relaxed">
