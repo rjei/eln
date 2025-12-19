@@ -1,9 +1,8 @@
-const API_BASE_URL = 'https://eln-by-rrr-backend-production.up.railway.app/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 // Helper to get auth token
 const getToken = (): string | null => localStorage.getItem('token');
 
-// Generic fetch wrapper with auth
 async function apiRequest<T>(
     endpoint: string,
     options: RequestInit = {}
@@ -16,86 +15,56 @@ async function apiRequest<T>(
         ...options.headers,
     };
 
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        ...options,
-        headers,
-    });
+    // Memastikan endpoint diawali dengan /
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
 
-    const data = await response.json();
+    try {
+        const response = await fetch(`${API_BASE_URL}${cleanEndpoint}`, {
+            ...options,
+            headers,
+        });
 
-    if (!response.ok) {
-        throw new Error(data.message || 'Something went wrong');
+        // Tangani jika respon kosong atau bukan JSON (sering terjadi pada error 500)
+        const contentType = response.headers.get("content-type");
+        let data;
+        if (contentType && contentType.includes("application/json")) {
+            data = await response.json();
+        } else {
+            data = { message: await response.text() };
+        }
+
+        if (!response.ok) {
+            // Jika token kadaluarsa (401), bisa tambahkan logika logout otomatis di sini
+            if (response.status === 401) {
+                localStorage.removeItem('token');
+            }
+            throw new Error(data.message || data.payload?.error || 'Something went wrong');
+        }
+
+        return data;
+    } catch (error: any) {
+        console.error(`API Error [${endpoint}]:`, error.message);
+        throw error;
     }
-
-    return data;
 }
 
-// ============ Auth API ============
-
-interface AuthPayload {
-    token: string;
-    user: {
-        id: number;
-        name: string;
-        email: string;
-    };
-}
+// ============ Interfaces ============
 
 interface ApiResponse<T> {
     status: number;
     payload: T;
 }
 
-export interface LoginResponse {
+export interface AuthPayload {
     token: string;
     user: {
         id: number;
         name: string;
         email: string;
+        xp?: number; // Tambahan XP jika ada di backend
+        level?: number;
     };
 }
-
-export const login = async (email: string, password: string): Promise<LoginResponse> => {
-    const response = await apiRequest<ApiResponse<AuthPayload>>('/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
-    });
-
-    const { token, user } = response.payload;
-
-    // Store token
-    if (token) {
-        localStorage.setItem('token', token);
-    }
-
-    return { token, user };
-};
-
-export const register = async (
-    name: string,
-    email: string,
-    password: string
-): Promise<LoginResponse> => {
-    const response = await apiRequest<ApiResponse<AuthPayload>>('/auth/register', {
-        method: 'POST',
-        body: JSON.stringify({ name, email, password }),
-    });
-
-    const { token, user } = response.payload;
-
-    // Store token
-    if (token) {
-        localStorage.setItem('token', token);
-    }
-
-    return { token, user };
-};
-
-export const logout = (): void => {
-    localStorage.removeItem('token');
-};
-
-// ============ Courses API ============
 
 export interface Course {
     id: number;
@@ -131,40 +100,67 @@ export interface TranscriptSegment {
     speaker: string;
 }
 
-interface CoursesResponse {
-    status: number;
-    payload: Course[];
+export interface UserProgress {
+    id: number;
+    lessonId: number;
+    courseId: number;
+    progress: number;
+    completed: boolean;
+    timeSpent: number;
+    completedAt: string | null;
 }
 
-interface CourseResponse {
-    status: number;
-    payload: Course;
-}
+// ============ Auth API ============
 
-interface LessonResponse {
-    status: number;
-    payload: Lesson;
-}
+export const login = async (email: string, password: string): Promise<AuthPayload> => {
+    const response = await apiRequest<ApiResponse<AuthPayload>>('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+    });
+
+    const { token, user } = response.payload;
+    if (token) localStorage.setItem('token', token);
+    return { token, user };
+};
+
+export const register = async (
+    name: string,
+    email: string,
+    password: string
+): Promise<AuthPayload> => {
+    const response = await apiRequest<ApiResponse<AuthPayload>>('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({ name, email, password }),
+    });
+
+    const { token, user } = response.payload;
+    if (token) localStorage.setItem('token', token);
+    return { token, user };
+};
+
+export const logout = (): void => {
+    localStorage.removeItem('token');
+};
+
+// ============ Courses API ============
 
 export const getCourses = async (): Promise<Course[]> => {
-    const response = await apiRequest<CoursesResponse>('/courses');
+    const response = await apiRequest<ApiResponse<Course[]>>('/courses');
     return response.payload || [];
 };
 
 export const getCourseById = async (id: number): Promise<Course> => {
-    const response = await apiRequest<CourseResponse>(`/courses/${id}`);
+    const response = await apiRequest<ApiResponse<Course>>(`/courses/${id}`);
     return response.payload;
 };
 
 export const getLessonById = async (id: number): Promise<Lesson> => {
-    const response = await apiRequest<LessonResponse>(`/lessons/${id}`);
+    const response = await apiRequest<ApiResponse<Lesson>>(`/lessons/${id}`);
     return response.payload;
 };
 
 export const getLessonsByCourse = async (courseId: number): Promise<Lesson[]> => {
-    const response = await apiRequest<{ status: number; payload: Lesson[] }>(
-        `/lessons/course/${courseId}`
-    );
+    const response = await apiRequest<ApiResponse<Lesson[]>>(`/lessons/course/${courseId}`);
     return response.payload || [];
 };
 
@@ -184,33 +180,17 @@ export const updateProgress = async (data: ProgressData): Promise<void> => {
     });
 };
 
-// Get user's progress for a specific course
-export interface UserProgress {
-    id: number;
-    lessonId: number;
-    courseId: number;
-    progress: number;
-    completed: boolean;
-    timeSpent: number;
-    completedAt: string | null;
-}
-
 export const getProgressByCourse = async (courseId: number): Promise<UserProgress[]> => {
     try {
-        const response = await apiRequest<{ status: number; payload: UserProgress[] }>(
-            `/progress/course/${courseId}`
-        );
+        const response = await apiRequest<ApiResponse<UserProgress[]>>(`/progress/course/${courseId}`);
         return response.payload || [];
-    } catch {
-        // Return empty array if not authenticated or error
+    } catch (error) {
         return [];
     }
 };
 
-// ============ Error Handler ============
+// ============ Helpers ============
 
 export const isAuthenticated = (): boolean => {
     return !!getToken();
 };
-
-
