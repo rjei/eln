@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Routes, Route, useNavigate, useParams } from "react-router-dom";
 import { Header } from "./components/Header";
 import { HomePage } from "./components/HomePage";
 import { CoursesPage } from "./components/CoursesPage";
@@ -13,169 +13,207 @@ import { CrosswordGame } from "./components/games/CrosswordGame";
 import { ComprehensibleInputPage } from "./components/ComprehensibleInputPage";
 import { LoginPage } from "./components/LoginPage";
 import { RegisterPage } from "./components/RegisterPage";
+import { PageProfil } from "./components/PageProfil";
+import { LoginModal } from "./components/LoginModal";
 import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner";
 import ClickSpark from "./components/ui/click-spark";
-import { logout } from "./services/api";
-import { PageProfil } from "./components/PageProfil";
-
-type Page =
-  | "home"
-  | "profile"
-  | "login"
-  | "register"
-  | "courses"
-  | "course-detail"
-  | "lesson"
-  | "my-learning"
-  | "comprehensible-input"
-  | "games"
-  | "game-wordle"
-  | "game-scramble"
-  | "game-hangman"
-  | "game-crossword";
+import { useAuth } from "./contexts/AuthContext";
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<Page>("login");
-  const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
-  const [selectedLessonId, setSelectedLessonId] = useState<number | null>(null);
-  const [user, setUser] = useState<{
-    name?: string;
-    email?: string;
-    phone?: string;
-    address?: string;
-    avatar?: string;
-  } | null>(null);
-
-  const handleNavigate = (page: string, courseId?: number) => {
-    setCurrentPage(page as Page);
-    if (courseId) {
-      setSelectedCourseId(courseId);
-    }
-  };
-
-  const handleLogin = (userData: { name: string; email: string }) => {
-    setUser(userData);
-    setCurrentPage("home");
-  };
-
-  const handleSelectCourse = (courseId: number) => {
-    setSelectedCourseId(courseId);
-    setCurrentPage("course-detail");
-  };
-
-  const handleStartLesson = (lessonId: number) => {
-    setSelectedLessonId(lessonId);
-    setCurrentPage("lesson");
-  };
-
-  const handleBackToCourse = () => {
-    setCurrentPage("course-detail");
-  };
-
-  const handleBackToCourses = () => {
-    setCurrentPage("courses");
-    setSelectedCourseId(null);
-  };
-
-  const handleLessonComplete = () => {
-    toast.success("Selamat! Lesson berhasil diselesaikan! 🎉");
-    setCurrentPage("course-detail");
-  };
-
-  const handleSelectGame = (gameId: string) => {
-    setCurrentPage(`game-${gameId}` as Page);
-  };
-
-  const handleBackToGames = () => {
-    setCurrentPage("games");
-  };
+  const { showLoginModal, setShowLoginModal } = useAuth();
 
   return (
-    <ClickSpark
-      sparkColor="#FFD700"
-      sparkSize={12}
-      sparkRadius={25}
-      sparkCount={10}
-    >
-      <div
-        className={`min-h-screen ${currentPage.startsWith("game-") ? "" : ""}`}
-      >
-        {currentPage !== "lesson" &&
-          !currentPage.startsWith("game-") &&
-          currentPage !== "login" &&
-          currentPage !== "register" && (
-            <Header onNavigate={handleNavigate} currentPage={currentPage} />
-          )}
-
-        {currentPage === "home" && <HomePage onNavigate={handleNavigate} />}
-        {currentPage === "login" && <LoginPage onLogin={handleLogin} />}
-        {currentPage === "register" && (
-          <RegisterPage onNavigate={handleNavigate} />
-        )}
-
-        {currentPage === "courses" && (
-          <CoursesPage onSelectCourse={handleSelectCourse} />
-        )}
-
-        {currentPage === "course-detail" && selectedCourseId && (
-          <CourseDetail
-            courseId={selectedCourseId}
-            onBack={handleBackToCourses}
-            onStartLesson={handleStartLesson}
-          />
-        )}
-
-        {currentPage === "lesson" && selectedLessonId && (
-          <LessonView
-            lessonId={selectedLessonId}
-            onBack={handleBackToCourse}
-            onComplete={handleLessonComplete}
-          />
-        )}
-
-        {currentPage === "my-learning" && (
-          <MyLearning onNavigate={handleNavigate} onLessonStart={handleStartLesson} />
-        )}
-
-        {currentPage === "profile" && (
-          <PageProfil
-            user={user}
-            onUpdateUser={(u) => setUser((prev) => ({ ...(prev ?? {}), ...u }))}
-            onLogout={() => {
-              logout();
-              setUser(null);
-              setCurrentPage("login");
-            }}
-          />
-        )}
-
-        {currentPage === "comprehensible-input" && (
-          <ComprehensibleInputPage onBack={() => setCurrentPage("home")} />
-        )}
-
-        {currentPage === "games" && (
-          <GamesPage onSelectGame={handleSelectGame} />
-        )}
-
-        {currentPage === "game-wordle" && (
-          <WordleGame onBack={handleBackToGames} />
-        )}
-
-        {currentPage === "game-scramble" && (
-          <WordScrambleGame onBack={handleBackToGames} />
-        )}
-
-        {currentPage === "game-hangman" && (
-          <HangmanGame onBack={handleBackToGames} />
-        )}
-
-        {currentPage === "game-crossword" && (
-          <CrosswordGame onBack={handleBackToGames} />
-        )}
-
-        <Toaster />
-      </div>
+    <ClickSpark sparkColor="#FFD700" sparkSize={12} sparkRadius={25} sparkCount={10}>
+      <AppLayout />
+      <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
+      <Toaster />
     </ClickSpark>
   );
 }
+
+function AppLayout() {
+  const navigate = useNavigate();
+  const { user, login, logout, updateUser } = useAuth();
+
+  const handleLogin = (userData: any) => {
+    // This is called from LoginPage (full page login)
+    // Token is now passed from LoginPage
+    const token = userData.token || localStorage.getItem('token') || '';
+    const user = {
+      id: userData.id,
+      name: userData.name,
+      email: userData.email,
+    };
+    login(user, token);
+    navigate("/");
+  };
+
+  return (
+    <Routes>
+      {/* Full page login/register (optional, user can still access these) */}
+      <Route
+        path="/login"
+        element={<LoginPage onLogin={handleLogin} />}
+      />
+      <Route path="/register" element={<RegisterPage />} />
+
+      {/* Main app with Header - accessible to everyone */}
+      <Route
+        path="*"
+        element={
+          <>
+            <Header />
+            <Routes>
+              {/* Public routes - everyone can access */}
+              <Route path="/" element={<HomePage />} />
+              <Route path="/courses" element={<CoursesWrapper />} />
+              <Route path="/courses/:id" element={<CourseDetailWrapper />} />
+              <Route path="/lesson/:id" element={<LessonWrapper />} />
+              <Route path="/my-learning" element={<MyLearningWrapper />} />
+              <Route
+                path="/profile"
+                element={
+                  <PageProfil
+                    user={user}
+                    onUpdateUser={updateUser}
+                    onLogout={() => {
+                      logout();
+                      navigate("/");
+                    }}
+                  />
+                }
+              />
+              <Route
+                path="/comprehensible-input"
+                element={<ComprehensibleInputPage onBack={() => navigate("/")} />}
+              />
+              <Route path="/games/*" element={<GamesWrapper />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </>
+        }
+      />
+    </Routes>
+  );
+}
+
+/* ================= WRAPPERS ================= */
+
+const CoursesWrapper = () => {
+  const navigate = useNavigate();
+  return <CoursesPage onSelectCourse={(id) => navigate(`/courses/${id}`)} />;
+};
+
+const CourseDetailWrapper = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  if (!id) return null;
+
+  return (
+    <CourseDetail
+      courseId={Number(id)}
+      onBack={() => navigate("/courses")}
+      onStartLesson={(lessonId) => navigate(`/lesson/${lessonId}`)}
+    />
+  );
+};
+
+const LessonWrapper = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { requireAuth } = useAuth();
+
+  if (!id) return null;
+
+  const handleComplete = () => {
+    // Require auth to save progress
+    requireAuth(() => {
+      toast.success("Selamat! Lesson berhasil diselesaikan! 🎉");
+      navigate(-1);
+    });
+  };
+
+  return (
+    <LessonView
+      lessonId={Number(id)}
+      onBack={() => navigate(-1)}
+      onComplete={handleComplete}
+    />
+  );
+};
+
+const MyLearningWrapper = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
+  // If not authenticated, show login prompt with link to login page
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-orange-50 flex items-center justify-center p-8">
+        <div className="text-center bg-white rounded-2xl shadow-xl p-8 max-w-md">
+          <div className="text-6xl mb-4">📚</div>
+          <h2 className="text-2xl font-bold mb-4">Masuk untuk Melihat Progress</h2>
+          <p className="text-gray-600 mb-6">
+            Silakan login untuk melihat pembelajaran Anda dan menyimpan progress belajar.
+          </p>
+          <button
+            onClick={() => navigate("/login")}
+            className="px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-lg hover:from-orange-600 hover:to-amber-600 transition-all"
+          >
+            Login Sekarang
+          </button>
+          <p className="mt-4 text-sm text-gray-500">
+            Atau{" "}
+            <button
+              onClick={() => navigate("/courses")}
+              className="text-orange-600 hover:underline"
+            >
+              jelajahi kursus dulu
+            </button>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <MyLearning
+      onNavigate={(page, courseId) => {
+        if (page === 'courses') navigate('/courses');
+        else if (page === 'course-detail' && courseId) navigate(`/courses/${courseId}`);
+        else navigate(`/${page}`);
+      }}
+      onLessonStart={(lessonId) => navigate(`/lesson/${lessonId}`)}
+    />
+  );
+};
+
+const GamesWrapper = () => {
+  const navigate = useNavigate();
+
+  return (
+    <Routes>
+      <Route
+        index
+        element={<GamesPage onSelectGame={(g) => navigate(`/games/${g}`)} />}
+      />
+      <Route path="wordle" element={<WordleGame onBack={() => navigate("/games")} />} />
+      <Route path="scramble" element={<WordScrambleGame onBack={() => navigate("/games")} />} />
+      <Route path="hangman" element={<HangmanGame onBack={() => navigate("/games")} />} />
+      <Route path="crossword" element={<CrosswordGame onBack={() => navigate("/games")} />} />
+    </Routes>
+  );
+};
+
+const NotFound = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="text-center">
+      <h1 className="text-6xl font-bold text-gray-300 mb-4">404</h1>
+      <p className="text-xl text-gray-600 mb-6">Halaman tidak ditemukan</p>
+      <a href="/" className="text-orange-600 hover:underline">
+        Kembali ke Beranda
+      </a>
+    </div>
+  </div>
+);

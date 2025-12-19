@@ -10,12 +10,11 @@ import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { RotatingText } from "./ui/RotatingText";
+import { useNavigate } from "react-router-dom";
 
-interface HomePageProps {
-  onNavigate: (page: string) => void;
-}
+export function HomePage() {
+  const navigate = useNavigate();
 
-export function HomePage({ onNavigate }: HomePageProps) {
   const features = [
     {
       icon: BookOpen,
@@ -26,7 +25,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
       icon: Video,
       title: "Video Learning",
       description: "Belajar dengan video interaktif dan subtitle real-time",
-      link: "comprehensible-input",
+      link: "/comprehensible-input",
     },
     {
       icon: Users,
@@ -83,7 +82,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
                 <Button
                   size="lg"
                   variant="secondary"
-                  onClick={() => onNavigate("courses")}
+                  onClick={() => navigate("/courses")}
                   className="gap-2 hover:scale-110 hover:shadow-2xl transition-all duration-300 animate-pulse-glow"
                 >
                   Mulai Belajar
@@ -145,23 +144,21 @@ export function HomePage({ onNavigate }: HomePageProps) {
               return (
                 <Card
                   key={index}
-                  onClick={() => feature.link && onNavigate(feature.link)}
+                  onClick={() => feature.link && navigate(feature.link)}
                   className="p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-4 cursor-pointer group border-2 border-transparent hover:border-primary/30 animate-fade-in-up hover-shine"
                   style={{ animationDelay: `${index * 0.15}s` }}
                 >
                   <div
-                    className={`h-12 w-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-125 group-hover:rotate-12 transition-all duration-300 ${
-                      feature.link
+                    className={`h-12 w-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-125 group-hover:rotate-12 transition-all duration-300 ${feature.link
                         ? "bg-gradient-to-br from-purple-100 to-pink-100 group-hover:from-purple-500 group-hover:to-pink-500 animate-gradient"
                         : "bg-orange-50 group-hover:bg-primary"
-                    }`}
+                      }`}
                   >
                     <Icon
-                      className={`h-6 w-6 transition-colors ${
-                        feature.link
+                      className={`h-6 w-6 transition-colors ${feature.link
                           ? "text-purple-600 group-hover:text-white"
                           : "text-primary group-hover:text-white"
-                      }`}
+                        }`}
                     />
                   </div>
                   <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
@@ -197,7 +194,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
           <Button
             size="lg"
             variant="secondary"
-            onClick={() => onNavigate("courses")}
+            onClick={() => navigate("/courses")}
             className="gap-2 hover:scale-110 hover:shadow-2xl transition-all duration-300 animate-bounce-slow hover-shine"
           >
             Jelajahi Kursus

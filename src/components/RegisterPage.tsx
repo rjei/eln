@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import heroImage from "../assets/gemini.png.png";
 
-export function RegisterPage({
-  onNavigate,
-}: {
-  onNavigate: (page: string) => void;
-}) {
+export function RegisterPage() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -15,7 +13,6 @@ export function RegisterPage({
     password: "",
     confirmPassword: "",
   });
-  const [rememberMe, setRememberMe] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +21,7 @@ export function RegisterPage({
       alert("Passwords don't match!");
       return;
     }
-    console.log("Register with:", { ...formData, rememberMe });
+    console.log("Register with:", formData);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,7 +83,7 @@ export function RegisterPage({
               style={{ padding: "2.5rem 2.75rem" }}
             >
               <button
-                onClick={() => onNavigate("login")}
+                onClick={() => navigate("/login")}
                 className="flex items-center text-gray-600 hover:text-gray-800 mb-6"
               >
                 <ArrowLeft size={18} className="mr-1" /> Back to Login
@@ -249,7 +246,7 @@ export function RegisterPage({
                     className="font-medium text-orange-600 hover:text-orange-500"
                     onClick={(e) => {
                       e.preventDefault();
-                      onNavigate("login");
+                      navigate("/login");
                     }}
                   >
                     Sign In

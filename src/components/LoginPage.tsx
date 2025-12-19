@@ -4,7 +4,7 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { login as apiLogin, register as apiRegister } from "../services/api";
 
 interface LoginPageProps {
-  onLogin: (user: { name: string; email: string }) => void;
+  onLogin: (user: { name: string; email: string; id?: number; token?: string }) => void;
   onSkip?: () => void;
 }
 
@@ -52,16 +52,22 @@ export function LoginPage({ onLogin, onSkip }: LoginPageProps) {
           formData.email,
           formData.password
         );
+        // Pass both user and token
         onLogin({
           name: response.user.name,
           email: response.user.email,
+          id: response.user.id,
+          token: response.token,
         });
       } else {
         // Login API call
         const response = await apiLogin(formData.email, formData.password);
+        // Pass both user and token
         onLogin({
           name: response.user.name,
           email: response.user.email,
+          id: response.user.id,
+          token: response.token,
         });
       }
     } catch (error) {
