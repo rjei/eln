@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 // Helper to get auth token
 const getToken = (): string | null => localStorage.getItem('token');
@@ -212,3 +212,4 @@ export const getProgressByCourse = async (courseId: number): Promise<UserProgres
 export const isAuthenticated = (): boolean => {
     return !!getToken();
 };
+
