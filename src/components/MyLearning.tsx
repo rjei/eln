@@ -3,9 +3,10 @@ import { Card } from './ui/card';
 import { Progress } from './ui/progress';
 import { Button } from './ui/button';
 import { useState, useEffect } from 'react';
+import { getProgressStats, UserStats as ApiUserStats } from '../services/api';
 
-// API Base URL
-const API_BASE_URL = "http://localhost:5000/api";
+// API Base URL - use environment variable for deployment
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 // Interfaces for API response
 interface CourseData {

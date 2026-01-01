@@ -4,15 +4,7 @@ import { Button } from "./ui/button";
 import { Progress } from "./ui/progress";
 import { Mail, Phone, MapPin, User, Trophy, Star, Zap, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
-
-// API Base URL
-const API_BASE_URL = "http://localhost:5000/api";
-
-interface UserStats {
-  points: number;
-  lessonsCompleted: number;
-  totalTimeSpent: number;
-}
+import { getUserStats, UserStats } from "../services/api";
 
 interface PageProfilProps {
   onBack?: () => void;
@@ -54,23 +46,10 @@ export function PageProfil({ onBack, user, onUpdateUser, onLogout }: PageProfilP
   }, []);
 
   const fetchUserStats = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/auth/me`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      const data = await response.json();
-
-      if (data.status === 200 && data.payload?.Stats) {
-        setStats(data.payload.Stats);
-        console.log('[PageProfil] User stats:', data.payload.Stats);
-      }
-    } catch (error) {
-      console.error('[PageProfil] Error fetching stats:', error);
+    const data = await getUserStats();
+    if (data) {
+      setStats(data);
+      console.log('[PageProfil] User stats:', data);
     }
   };
 

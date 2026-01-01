@@ -1,294 +1,507 @@
 import { useState } from "react";
-import { Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { motion } from "framer-motion";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import heroImage from "../assets/gemini.png.png";
+import { register as apiRegister } from "../services/api";
 
 export function RegisterPage() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [stayLoggedIn, setStayLoggedIn] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle registration logic here
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match!");
-      return;
-    }
-    console.log("Register with:", formData);
-  };
+  const [errors, setErrors] = useState<{
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+  }>({});
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // Client-side validation
+    const nextErrors: typeof errors = {};
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
+      nextErrors.email = "Email tidak valid";
+    if (formData.password.length < 6)
+      nextErrors.password = "Password minimal 6 karakter";
+    if (formData.password !== formData.confirmPassword)
+      nextErrors.confirmPassword = "Password tidak sama";
+
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
+
+    setIsLoading(true);
+
+    try {
+      // Register API call
+      const response = await apiRegister(
+        formData.email.split("@")[0], // Use email prefix as name
+        formData.email,
+        formData.password
+      );
+      console.log("Registration successful:", response);
+      // Redirect to login page after successful registration
+      navigate("/login");
+    } catch (error) {
+      // Handle API error
+      const errorMessage =
+        error instanceof Error ? error.message : "Terjadi kesalahan";
+      setErrors({ email: errorMessage });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white relative overflow-hidden">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center">
-            <div className="flex items-center">
-              <div className="bg-orange-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl mr-2">
-                E
-              </div>
-              <span className="text-xl font-bold text-gray-800">
-                ENGLISH E-LEARNING
-              </span>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div
+      style={{
+        width: "100vw",
+        height: "100vh",
+        display: "flex",
+        position: "relative",
+        fontFamily: "Arial, sans-serif",
+        overflow: "hidden",
+        background:
+          "linear-gradient(135deg, #e05f3e 0%, #ea580c 50%, #c2410c 100%)",
+      }}
+    >
+      {/* Image shape with clip-path */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "55%",
+          height: "100%",
+          clipPath: "ellipse(45% 60% at 30% 50%)",
+          backgroundImage: `url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          zIndex: 1,
+        }}
+      />
 
-      {/* Main Content */}
-      <main className="flex-grow relative overflow-hidden">
-        {/* Content */}
-        <div className="relative z-10 h-full flex items-center">
-          {/* Left side - Circular hero image + text */}
-          <div className="w-1/2 h-full flex items-center justify-center">
-            <div className="relative w-[360px] h-[360px] rounded-full overflow-hidden shadow-2xl">
-              <img
-                src={heroImage}
-                alt="English e-learning hero"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-orange-500/55 mix-blend-multiply" />
-              <div className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center text-white">
-                <h1 className="text-3xl font-bold mb-3 leading-tight">
-                  ENGLISH
-                  <br />
-                  E-LEARNING
-                </h1>
-                <p className="text-base">
-                  Start your journey to master English today.
-                </p>
-              </div>
-            </div>
-          </div>
+      {/* Decorative shapes */}
+      <svg
+        style={{
+          position: "absolute",
+          width: "100%",
+          height: "100%",
+          zIndex: 0,
+        }}
+        viewBox="0 0 1920 1080"
+        preserveAspectRatio="xMidYMid slice"
+      >
+        <circle cx="1700" cy="200" r="400" fill="rgba(255,255,255,0.15)" />
+        <circle cx="1800" cy="900" r="300" fill="rgba(255,255,255,0.1)" />
+        <path
+          d="M 1200,400 Q 1400,300 1600,400 T 1920,400 L 1920,0 L 1200,0 Z"
+          fill="rgba(255,255,255,0.08)"
+        />
+        <path
+          d="M 1200,800 Q 1400,700 1600,800 T 1920,800 L 1920,1080 L 1200,1080 Z"
+          fill="rgba(255,255,255,0.08)"
+        />
+      </svg>
 
-          {/* Right side - Register Card */}
-          <div className="w-1/2 flex justify-end pr-32 mt-6">
-            <div
-              className="bg-white/95 rounded-none shadow-[0_22px_55px_rgba(0,0,0,0.25)] border border-orange-200 w-full max-w-md"
-              style={{ padding: "2.5rem 2.75rem" }}
+      {/* Main content container */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 2,
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0 8% 0 8%",
+          paddingRight: "15%",
+        }}
+      >
+        {/* Left side - Text */}
+        <div
+          style={{
+            maxWidth: "600px",
+            color: "white",
+            marginLeft: "60px",
+            position: "relative",
+            marginTop: "400px",
+          }}
+        >
+          {/* Orange circular background behind text */}
+          <div
+            style={{
+              position: "absolute",
+              top: "-60px",
+              left: "-500px",
+              width: "700px",
+              height: "700px",
+              background:
+                "linear-gradient(135deg, rgba(224, 95, 62, 0.75) 0%, rgba(234, 88, 12, 0.75) 50%, rgba(194, 65, 12, 0.65) 100%)",
+              borderRadius: "50%",
+              zIndex: -1,
+              backdropFilter: "blur(3px)",
+            }}
+          />
+
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            style={{
+              paddingLeft: "20px",
+            }}
+          >
+            <h1
+              style={{
+                fontSize: "64px",
+                fontWeight: "bold",
+                marginBottom: "20px",
+                lineHeight: "1.2",
+                textTransform: "uppercase",
+                letterSpacing: "2px",
+              }}
             >
-              <button
-                onClick={() => navigate("/login")}
-                className="flex items-center text-gray-600 hover:text-gray-800 mb-6"
-              >
-                <ArrowLeft size={18} className="mr-1" /> Back to Login
-              </button>
-
-              <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-gray-800">
-                  Create an Account
-                </h2>
-                <p className="text-gray-600 mt-2">
-                  Join our community of English learners
-                </p>
-              </div>
-
-              <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-lg border border-orange-300 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition-all text-sm placeholder-gray-400 bg-white"
-                    placeholder="Enter your full name"
-                    required
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition"
-                    placeholder="Enter your email address"
-                    required
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label
-                    htmlFor="password"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      id="password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-lg border border-orange-300 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition-all text-sm placeholder-gray-400 bg-white pr-10"
-                      placeholder="Create a password"
-                      required
-                      minLength={6}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                    >
-                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <label
-                    htmlFor="confirmPassword"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Confirm Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showConfirmPassword ? "text" : "password"}
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 pr-10 outline-none transition"
-                      placeholder="Confirm your password"
-                      required
-                      minLength={6}
-                    />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                    >
-                      {showConfirmPassword ? (
-                        <EyeOff size={18} />
-                      ) : (
-                        <Eye size={18} />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex items-center mb-6">
-                  <input
-                    id="terms"
-                    name="terms"
-                    type="checkbox"
-                    className="h-4 w-4 text-orange-500 focus:ring-orange-500 border-gray-300 rounded"
-                    required
-                  />
-                  <label
-                    htmlFor="terms"
-                    className="ml-2 block text-sm text-gray-700"
-                  >
-                    I agree to the{" "}
-                    <a
-                      href="#"
-                      className="text-orange-600 hover:text-orange-500"
-                    >
-                      Terms of Service
-                    </a>{" "}
-                    and{" "}
-                    <a
-                      href="#"
-                      className="text-orange-600 hover:text-orange-500"
-                    >
-                      Privacy Policy
-                    </a>
-                  </label>
-                </div>
-
-                <button
-                  type="submit"
-                  className="bg-[#f97316] hover:bg-orange-700 text-white font-bold py-3.5 px-4 rounded-lg w-full transition-colors shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2"
-                >
-                  CREATE ACCOUNT <span className="ml-2">→</span>
-                </button>
-              </form>
-
-              <div className="mt-6 text-center text-sm text-gray-600">
-                <p>
-                  Already have an account?{" "}
-                  <a
-                    href="#"
-                    className="font-medium text-orange-600 hover:text-orange-500"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      navigate("/login");
-                    }}
-                  >
-                    Sign In
-                  </a>
-                </p>
-              </div>
-            </div>
-          </div>
+              ENGLISH E-LEARNING
+            </h1>
+            <p
+              style={{
+                fontSize: "24px",
+                fontWeight: "300",
+                opacity: 0.95,
+              }}
+            >
+              Master English, Connect with the World.
+            </p>
+          </motion.div>
         </div>
-      </main>
 
-      {/* Decorative elements */}
-      {/* Gelombang oranye atas kanan */}
-      <div
-        style={{
-          position: "absolute",
-          right: "-220px",
-          top: "20px",
-          width: "720px",
-          height: "260px",
-          backgroundImage:
-            "radial-gradient(circle at 0% 0%, rgba(249,115,22,0.55), transparent 60%), radial-gradient(circle at 60% 120%, rgba(251,146,60,0.5), transparent 65%)",
-          borderRadius: "180px",
-          opacity: 0.9,
-          pointerEvents: "none",
-        }}
-      />
-      {/* Gelombang oranye bawah kanan */}
-      <div
-        style={{
-          position: "absolute",
-          right: "-260px",
-          bottom: "-60px",
-          width: "780px",
-          height: "260px",
-          backgroundImage:
-            "radial-gradient(circle at 20% 0%, rgba(253,186,116,0.7), transparent 60%), radial-gradient(circle at 80% 120%, rgba(254,215,170,0.9), transparent 65%)",
-          borderRadius: "200px",
-          opacity: 0.95,
-          pointerEvents: "none",
-        }}
-      />
+        {/* Right side - Register card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          style={{
+            background: "rgba(255, 255, 255, 0.95)",
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
+            padding: "50px 40px",
+            borderRadius: "20px",
+            width: "420px",
+            boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
+          }}
+        >
+          <h2
+            style={{
+              fontSize: "32px",
+              fontWeight: "bold",
+              marginBottom: "8px",
+              color: "#1f2937",
+              textAlign: "center",
+            }}
+          >
+            Create Account!
+          </h2>
+          <p
+            style={{
+              fontSize: "14px",
+              color: "#6b7280",
+              marginBottom: "30px",
+              textAlign: "center",
+            }}
+          >
+            Please create your account
+          </p>
+
+          <form onSubmit={handleSubmit}>
+            <input
+              type="email"
+              placeholder="Enter your email address"
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
+              style={{
+                width: "100%",
+                padding: "14px 16px",
+                marginBottom: "16px",
+                borderRadius: "8px",
+                border: "1px solid #e5e7eb",
+                outline: "none",
+                fontSize: "15px",
+                boxSizing: "border-box",
+                backgroundColor: "white",
+              }}
+            />
+            {errors.email && (
+              <p
+                style={{
+                  color: "#ef4444",
+                  fontSize: "13px",
+                  marginTop: "-12px",
+                  marginBottom: "12px",
+                  textAlign: "left",
+                }}
+              >
+                {errors.email}
+              </p>
+            )}
+
+            <div style={{ position: "relative", marginBottom: "16px" }}>
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
+                style={{
+                  width: "100%",
+                  padding: "14px 16px",
+                  paddingRight: "45px",
+                  borderRadius: "8px",
+                  border: "1px solid #e5e7eb",
+                  outline: "none",
+                  fontSize: "15px",
+                  boxSizing: "border-box",
+                  backgroundColor: "white",
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: "absolute",
+                  right: "12px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: "5px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+                aria-label={showPassword ? "hide password" : "show password"}
+              >
+                {showPassword ? (
+                  <EyeOff
+                    style={{ width: "20px", height: "20px", color: "#9ca3af" }}
+                  />
+                ) : (
+                  <Eye
+                    style={{ width: "20px", height: "20px", color: "#9ca3af" }}
+                  />
+                )}
+              </button>
+            </div>
+            {errors.password && (
+              <p
+                style={{
+                  color: "#ef4444",
+                  fontSize: "13px",
+                  marginTop: "-12px",
+                  marginBottom: "12px",
+                  textAlign: "left",
+                }}
+              >
+                {errors.password}
+              </p>
+            )}
+
+            <div style={{ position: "relative", marginBottom: "16px" }}>
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Confirm your password"
+                value={formData.confirmPassword}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    confirmPassword: e.target.value,
+                  })
+                }
+                style={{
+                  width: "100%",
+                  padding: "14px 16px",
+                  paddingRight: "45px",
+                  borderRadius: "8px",
+                  border: "1px solid #e5e7eb",
+                  outline: "none",
+                  fontSize: "15px",
+                  boxSizing: "border-box",
+                  backgroundColor: "white",
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                style={{
+                  position: "absolute",
+                  right: "12px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: "5px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+                aria-label={
+                  showConfirmPassword ? "hide password" : "show password"
+                }
+              >
+                {showConfirmPassword ? (
+                  <EyeOff
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                      color: "#9ca3af",
+                    }}
+                  />
+                ) : (
+                  <Eye
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                      color: "#9ca3af",
+                    }}
+                  />
+                )}
+              </button>
+            </div>
+            {errors.confirmPassword && (
+              <p
+                style={{
+                  color: "#ef4444",
+                  fontSize: "13px",
+                  marginTop: "-12px",
+                  marginBottom: "12px",
+                  textAlign: "left",
+                }}
+              >
+                {errors.confirmPassword}
+              </p>
+            )}
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "24px",
+              }}
+            >
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  color: "#4b5563",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={stayLoggedIn}
+                  onChange={(e) => setStayLoggedIn(e.target.checked)}
+                  style={{ cursor: "pointer" }}
+                />
+                Stay logged in
+              </label>
+
+              <a
+                href="#"
+                style={{
+                  color: "#f97316",
+                  textDecoration: "none",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                }}
+              >
+                Forgot password?
+              </a>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              style={{
+                width: "100%",
+                padding: "14px",
+                border: "none",
+                background: "linear-gradient(135deg, #f97316 0%, #ea580c 100%)",
+                color: "white",
+                fontSize: "15px",
+                fontWeight: "600",
+                cursor: isLoading ? "not-allowed" : "pointer",
+                borderRadius: "8px",
+                opacity: isLoading ? 0.7 : 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+                boxShadow: "0 4px 12px rgba(249, 115, 22, 0.4)",
+                transition: "all 0.3s",
+              }}
+              onMouseOver={(e) => {
+                if (!isLoading)
+                  e.currentTarget.style.transform = "translateY(-2px)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2
+                    style={{
+                      width: "18px",
+                      height: "18px",
+                      animation: "spin 1s linear infinite",
+                    }}
+                  />
+                  Loading...
+                </>
+              ) : (
+                <>CREATE ACCOUNT</>
+              )}
+            </button>
+
+            <div
+              style={{
+                textAlign: "center",
+                marginTop: "24px",
+                fontSize: "14px",
+                color: "#6b7280",
+              }}
+            >
+              <span>Sudah punya akun? </span>
+              <button
+                type="button"
+                onClick={() => navigate("/login")}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#f97316",
+                  textDecoration: "none",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  padding: 0,
+                }}
+              >
+                Masuk
+              </button>
+            </div>
+          </form>
+        </motion.div>
+      </div>
     </div>
   );
 }

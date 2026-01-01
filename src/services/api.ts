@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 // Helper to get auth token
 const getToken = (): string | null => localStorage.getItem('token');
@@ -204,6 +204,42 @@ export const getProgressByCourse = async (courseId: number): Promise<UserProgres
     } catch {
         // Return empty array if not authenticated or error
         return [];
+    }
+};
+
+// ============ User Stats API ============
+
+export interface UserStats {
+    points: number;
+    level: number;
+    lessonsCompleted: number;
+    coursesCompleted: number;
+    streak: number;
+    totalTimeSpent: number;
+}
+
+export const getUserStats = async (): Promise<UserStats | null> => {
+    try {
+        const response = await apiRequest<{ status: number; payload: { Stats: UserStats } }>('/auth/me');
+        if (response.status === 200 && response.payload?.Stats) {
+            return response.payload.Stats;
+        }
+        return null;
+    } catch {
+        return null;
+    }
+};
+
+// Alternative: Get stats from progress endpoint (if backend supports it)
+export const getProgressStats = async (): Promise<UserStats | null> => {
+    try {
+        const response = await apiRequest<{ status: number; payload: UserStats }>('/progress/stats');
+        if (response.status === 200 && response.payload) {
+            return response.payload;
+        }
+        return null;
+    } catch {
+        return null;
     }
 };
 
